@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditIQ — Financial Intelligence Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/svg+xml" href="logo-icon.svg">
+<link rel="apple-touch-icon" href="logo-icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+<div class="app">
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <img id="brandLogo" class="brand-logo" src="logo-full-dark.svg" alt="AuditIQ — Financial Intelligence Desk">
+    </div>
+
+    <div class="topbar-right">
+      <button id="settingsToggle" class="icon-btn" title="Settings">⚙</button>
+      <button id="themeToggle" class="icon-btn" title="Toggle theme">🌙</button>
+      <button id="accountBtn" class="icon-btn" title="Account">👤</button>
+    </div>
+  </header>
+
+  <div class="body-layout">
+
+    <!-- ===== SETTINGS PANEL (collapsible) ===== -->
+    <aside id="settingsPanel" class="settings-panel">
+      <h3>Session Settings</h3>
+
+      <div class="field-group">
+        <label for="ticker">Instrument ticker</label>
+        <input id="ticker" type="text" placeholder="ENGRO, FFC, LUCK…" autocomplete="off">
+      </div>
+
+      <div class="field-group">
+        <label for="language">Report language</label>
+        <select id="language">
+          <option>English</option>
+          <option>Roman Urdu</option>
+          <option>Urdu</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="apiKey">Groq API key</label>
+        <input id="apiKey" type="password" placeholder="gsk_… (optional)" autocomplete="off">
+        <span class="hint">Blank = offline preview mode</span>
+      </div>
+
+      <div class="field-group">
+        <label for="apiBase">Backend URL (leave blank if same site)</label>
+        <input id="apiBase" type="text" value="" placeholder="only set this if backend is elsewhere">
+      </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <main class="main">
+
+      <!-- KPI dashboard strip -->
+      <section class="kpi-row" id="kpiRow">
+        <div class="kpi-card">
+          <p class="kpi-title">Cumulative Ledger Volume</p>
+          <p class="kpi-value" id="kpiTotal">—</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-title">Next-Period Forecast</p>
+          <p class="kpi-value accent" id="kpiForecast">—</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-title">Market Snapshot</p>
+          <p class="kpi-value" id="kpiMarket">—</p>
+        </div>
+      </section>
+
+      <!-- Chat thread -->
+      <section class="thread" id="thread">
+        <div class="msg assistant">
+          <div class="msg-avatar">AI</div>
+          <div class="msg-bubble">
+           <p> Welcome to AuditIQ Upload your ledger or image file (.xlsx / .csv / .pdf / .png / .jpg) using the attachment (+) button below, then click <strong>Run Analysis</strong>.</p>
+            <p style="color:var(--text-mid); font-size:12.5px;">Interface is in English. Reports can be generated in English, Roman Urdu, or Urdu — pick a language in ⚙ Settings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chat input bar -->
+      <footer class="composer">
+        <div class="attach-wrapper">
+          <button id="attachBtn" class="attach-btn" title="Attach">+</button>
+          <div id="attachMenu" class="attach-menu">
+            <button data-action="file">📄 Upload File (.xlsx/.csv/.pdf)</button>
+            <button data-action="photo">🖼 Choose Photo</button>
+            <button data-action="camera">📷 Take Photo</button>
+          </div>
+        </div>
+
+        <input id="fileInputGeneral" type="file" accept=".xlsx,.csv,.pdf" hidden>
+        <input id="fileInputPhoto" type="file" accept="image/*" hidden>
+        <input id="fileInputCamera" type="file" accept="image/*" capture="environment" hidden>
+
+        <input id="messageInput" class="message-input" type="text" placeholder="Type a message…" autocomplete="off">
+
+        <button id="micBtn" class="icon-round-btn" title="Speak instead of typing">🎤</button>
+        <button id="sendBtn" class="send-btn" title="Send">➤</button>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

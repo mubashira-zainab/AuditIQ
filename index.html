@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditIQ — Financial Intelligence Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/svg+xml" href="logo-icon.svg">
+<link rel="apple-touch-icon" href="logo-icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+
+<<<<<<< HEAD
+<!-- ===== LOGIN / SIGNUP SCREEN ===== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-container">
+    <div class="login-brand">
+      <img id="loginLogo" class="login-logo" src="logo-full-dark.svg" alt="AuditIQ Logo">
+    </div>
+    
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Sign In</button>
+        <button id="tabSignup" class="auth-tab">Create Account</button>
+      </div>
+
+      <form id="authForm" class="auth-form" onsubmit="return false;">
+        <h2 id="authTitle">Welcome Back</h2>
+        <p id="authSubtitle" class="auth-subtitle">Enter your credentials to access your financial intelligence desk.</p>
+<div class="input-group">
+  <label for="authUsername">Username</label>
+  <div class="input-wrapper">
+    <span class="input-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </span>
+    <input type="text" id="authUsername" placeholder="Username" autocomplete="username" required />
+  </div>
+</div>
+        <div class="input-group">
+          <label for="authEmail">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input type="email" id="authEmail" placeholder="you@gmail.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="authPassword">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="togglePasswordBtn" class="toggle-password-btn" title="Toggle password visibility">
+              <!-- Dynamic Eye Icon (SVG) -->
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>  
+
+        <button type="submit" id="authSubmitBtn" class="auth-submit-btn">Sign In</button>
+        <p id="authErrorMsg" class="auth-error-msg"></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APPLICATION ===== -->
+<div class="app hidden" id="appRoot">
+=======
+<div class="app">
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="topbar">
+    <div class="brand">
+<<<<<<< HEAD
+      <img id="brandLogo" class="brand-logo" src="logo-full-dark.svg" alt="AuditIQ Logo">
+    </div>
+
+    <div class="topbar-right">
+      <button id="logoutBtn" class="icon-btn" title="Sign Out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </button>
+      <button id="settingsToggle" class="icon-btn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      <button id="themeToggle" class="icon-btn" title="Toggle Theme">
+        <!-- SVG Moon (Dark theme toggle icon) -->
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <div class="body-layout">
+
+    <!-- ===== SIDEBAR / CHAT HISTORY DRAWER ===== -->
+    <aside id="chatSidebar" class="sidebar" style="display: flex; flex-direction: column;">
+  <!-- Upar wala hissa (New Chat aur Recent Audits) -->
+  <div style="flex: 1;">
+    <button id="newChatBtn" class="new-chat-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>New Chat</span>
+    </button>
+    
+    <div class="recents-container" style="margin-top: 20px;">
+      <p class="recents-title" style="margin-bottom: 8px;">Recent Audits</p>
+      <ul id="recentsList" class="recents-list" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Dynamically populated via app.js -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Neeche wala hissa (Account Button at the Bottom) -->
+  <div style="padding-top: 10px; border-top: 1px solid var(--border-color, #333);">
+    <button id="accountBtn" class="new-chat-btn" style="display: flex; align-items: center; gap: 10px; width: 100%;">
+      <img src="/static/user-icon.png" alt="Account" style="width: 20px; height: 20px; border-radius: 50%;">
+      <span>Account</span>
+    </button>
+  </div>
+</aside>
+
+=======
+      <img id="brandLogo" class="brand-logo" src="logo-full-dark.svg" alt="AuditIQ — Financial Intelligence Desk">
+    </div>
+
+    <div class="topbar-right">
+      <button id="settingsToggle" class="icon-btn" title="Settings">⚙</button>
+      <button id="themeToggle" class="icon-btn" title="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="body-layout">
+
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+    <!-- ===== SETTINGS PANEL (collapsible) ===== -->
+    <aside id="settingsPanel" class="settings-panel">
+      <h3>Session Settings</h3>
+
+      <div class="field-group">
+<<<<<<< HEAD
+        <label for="ticker">Instrument Ticker</label>
+=======
+        <label for="ticker">Instrument ticker</label>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+        <input id="ticker" type="text" placeholder="ENGRO, FFC, LUCK…" autocomplete="off">
+      </div>
+
+      <div class="field-group">
+<<<<<<< HEAD
+        <label for="language">Report Language</label>
+=======
+        <label for="language">Report language</label>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+        <select id="language">
+          <option>English</option>
+          <option>Roman Urdu</option>
+          <option>Urdu</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+<<<<<<< HEAD
+        <label for="apiKey">Groq API Key (Optional)</label>
+        <input id="apiKey" type="password" placeholder="gsk_… (runs backend default if blank)" autocomplete="off">
+=======
+        <label for="apiKey">Groq API key</label>
+        <input id="apiKey" type="password" placeholder="gsk_… (optional)" autocomplete="off">
+        <span class="hint">Blank = offline preview mode</span>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+      </div>
+
+      <div class="field-group">
+        <label for="apiBase">Backend URL</label>
+<<<<<<< HEAD
+        <input id="apiBase" type="text" value="http://127.0.0.1:8000" placeholder="e.g. http://127.0.0.1:8000">
+=======
+        <!-- api link updated -->
+        <input id="apiBase" type="text" value="https://auditiq-f8t8.onrender.com">
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+      </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <main class="main">
+
+      <!-- KPI dashboard strip -->
+      <section class="kpi-row" id="kpiRow">
+        <div class="kpi-card">
+          <p class="kpi-title">Cumulative Ledger Volume</p>
+          <p class="kpi-value" id="kpiTotal">—</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-title">Next-Period Forecast</p>
+          <p class="kpi-value accent" id="kpiForecast">—</p>
+        </div>
+        <div class="kpi-card">
+          <p class="kpi-title">Market Snapshot</p>
+          <p class="kpi-value" id="kpiMarket">—</p>
+        </div>
+      </section>
+
+      <!-- Chat thread -->
+      <section class="thread" id="thread">
+        <div class="msg assistant">
+          <div class="msg-avatar">AI</div>
+<<<<<<< HEAD
+          <div class="msg-bubble animate-bubble">
+            <p> Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf ./ png ./ jpg ./ jpeg ) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
+            <p style="color:var(--text-mid); font-size:12.5px;">Reports can be generated in English, Roman Urdu, or Urdu. Set your preferences in settings.</p>
+=======
+          <div class="msg-bubble">
+            <p>Welcome to AuditIQ 👋 Upload your ledger file (.xlsx / .csv / .pdf) using the <strong>+</strong> button below, then click <em>Run Analysis</em>.</p>
+            <p style="color:var(--text-mid); font-size:12.5px;">Interface is in English. Reports can be generated in English, Roman Urdu, or Urdu — pick a language in ⚙ Settings.</p>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+          </div>
+        </div>
+      </section>
+
+      <!-- Chat input bar -->
+      <footer class="composer">
+        <div class="attach-wrapper">
+<<<<<<< HEAD
+          <button id="attachBtn" class="attach-btn" title="Attach">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <div id="attachMenu" class="attach-menu">
+            <button data-action="file">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              Upload File (.xlsx/.csv/.pdf)
+            </button>
+            <button data-action="photo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              Choose Photo
+            </button>
+            <button data-action="camera">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              Take Photo
+            </button>
+=======
+          <button id="attachBtn" class="attach-btn" title="Attach">+</button>
+          <div id="attachMenu" class="attach-menu">
+            <button data-action="file">📄 Upload File (.xlsx/.csv/.pdf)</button>
+            <button data-action="photo">🖼 Choose Photo</button>
+            <button data-action="camera">📷 Take Photo</button>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+          </div>
+        </div>
+
+        <input id="fileInputGeneral" type="file" accept=".xlsx,.csv,.pdf" hidden>
+        <input id="fileInputPhoto" type="file" accept="image/*" hidden>
+        <input id="fileInputCamera" type="file" accept="image/*" capture="environment" hidden>
+
+<<<<<<< HEAD
+        <input id="messageInput" class="message-input" type="text" placeholder="Ask AuditIQ a question about your files…" autocomplete="off">
+
+        <button id="micBtn" class="icon-round-btn" title="Speak instead of typing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+        <button id="sendBtn" class="send-btn" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </footer>
+    </main>
+  </div>
+  
+  <!-- ===== ACCOUNT MODAL ===== -->
+  <div id="accountModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button id="closeAccountModal" class="modal-close">&times;</button>
+      <h2>Account Profile</h2>
+      <div class="avatar-section">
+        <img id="profileAvatarPreview" src="/static/user-icon.png" alt="User Avatar" class="profile-avatar-large">
+        <label for="avatarUpload" class="avatar-upload-btn">Change Avatar</label>
+        <input type="file" id="avatarUpload" accept="image/*" hidden>
+      </div>
+      <div class="profile-details">
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" id="profileUsername" class="profile-val" autocomplete="off" />
+        </div>
+        <div class="field-group">
+          <label>Email</label>
+          <div id="profileEmail" class="profile-val" style="opacity: 0.7;">...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+=======
+        <input id="messageInput" class="message-input" type="text" placeholder="Type a message…" autocomplete="off">
+
+        <button id="micBtn" class="icon-round-btn" title="Speak instead of typing">🎤</button>
+        <button id="sendBtn" class="send-btn" title="Send">➤</button>
+      </footer>
+
+    </main>
+  </div>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+<<<<<<< HEAD
+</html>
+=======
+</html>
+>>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a

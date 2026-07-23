@@ -1,0 +1,6 @@
+Date,Account,Debit,Credit,Balance
+2022-01-01,Cash,10000,0,10000
+2022-01-05,Accounts Receivable,0,5000,-5000
+2022-01-10,Revenue,0,20000,15000
+2022-01-15,Expenses,8000,0,7000
+2022-01-20,Accounts Payable,0,3000,4000
