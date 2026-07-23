@@ -13,7 +13,6 @@
 </head>
 <body data-theme="dark">
 
-<<<<<<< HEAD
 <!-- ===== LOGIN / SIGNUP SCREEN ===== -->
 <div id="loginScreen" class="login-screen">
   <div class="login-container">
@@ -84,14 +83,10 @@
 
 <!-- ===== MAIN APPLICATION ===== -->
 <div class="app hidden" id="appRoot">
-=======
-<div class="app">
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
 
   <!-- ===== TOP BAR ===== -->
   <header class="topbar">
     <div class="brand">
-<<<<<<< HEAD
       <img id="brandLogo" class="brand-logo" src="logo-full-dark.svg" alt="AuditIQ Logo">
     </div>
 
@@ -149,38 +144,17 @@
   </div>
 </aside>
 
-=======
-      <img id="brandLogo" class="brand-logo" src="logo-full-dark.svg" alt="AuditIQ — Financial Intelligence Desk">
-    </div>
-
-    <div class="topbar-right">
-      <button id="settingsToggle" class="icon-btn" title="Settings">⚙</button>
-      <button id="themeToggle" class="icon-btn" title="Toggle theme">🌙</button>
-    </div>
-  </header>
-
-  <div class="body-layout">
-
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
     <!-- ===== SETTINGS PANEL (collapsible) ===== -->
     <aside id="settingsPanel" class="settings-panel">
       <h3>Session Settings</h3>
 
       <div class="field-group">
-<<<<<<< HEAD
         <label for="ticker">Instrument Ticker</label>
-=======
-        <label for="ticker">Instrument ticker</label>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
         <input id="ticker" type="text" placeholder="ENGRO, FFC, LUCK…" autocomplete="off">
       </div>
 
       <div class="field-group">
-<<<<<<< HEAD
         <label for="language">Report Language</label>
-=======
-        <label for="language">Report language</label>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
         <select id="language">
           <option>English</option>
           <option>Roman Urdu</option>
@@ -189,24 +163,13 @@
       </div>
 
       <div class="field-group">
-<<<<<<< HEAD
         <label for="apiKey">Groq API Key (Optional)</label>
         <input id="apiKey" type="password" placeholder="gsk_… (runs backend default if blank)" autocomplete="off">
-=======
-        <label for="apiKey">Groq API key</label>
-        <input id="apiKey" type="password" placeholder="gsk_… (optional)" autocomplete="off">
-        <span class="hint">Blank = offline preview mode</span>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
       </div>
 
       <div class="field-group">
         <label for="apiBase">Backend URL</label>
-<<<<<<< HEAD
         <input id="apiBase" type="text" value="http://127.0.0.1:8000" placeholder="e.g. http://127.0.0.1:8000">
-=======
-        <!-- api link updated -->
-        <input id="apiBase" type="text" value="https://auditiq-f8t8.onrender.com">
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
       </div>
     </aside>
 
@@ -233,15 +196,9 @@
       <section class="thread" id="thread">
         <div class="msg assistant">
           <div class="msg-avatar">AI</div>
-<<<<<<< HEAD
           <div class="msg-bubble animate-bubble">
             <p> Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf ./ png ./ jpg ./ jpeg ) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
             <p style="color:var(--text-mid); font-size:12.5px;">Reports can be generated in English, Roman Urdu, or Urdu. Set your preferences in settings.</p>
-=======
-          <div class="msg-bubble">
-            <p>Welcome to AuditIQ 👋 Upload your ledger file (.xlsx / .csv / .pdf) using the <strong>+</strong> button below, then click <em>Run Analysis</em>.</p>
-            <p style="color:var(--text-mid); font-size:12.5px;">Interface is in English. Reports can be generated in English, Roman Urdu, or Urdu — pick a language in ⚙ Settings.</p>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
           </div>
         </div>
       </section>
@@ -249,7 +206,6 @@
       <!-- Chat input bar -->
       <footer class="composer">
         <div class="attach-wrapper">
-<<<<<<< HEAD
           <button id="attachBtn" class="attach-btn" title="Attach">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -281,13 +237,6 @@
               </svg>
               Take Photo
             </button>
-=======
-          <button id="attachBtn" class="attach-btn" title="Attach">+</button>
-          <div id="attachMenu" class="attach-menu">
-            <button data-action="file">📄 Upload File (.xlsx/.csv/.pdf)</button>
-            <button data-action="photo">🖼 Choose Photo</button>
-            <button data-action="camera">📷 Take Photo</button>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
           </div>
         </div>
 
@@ -295,7 +244,6 @@
         <input id="fileInputPhoto" type="file" accept="image/*" hidden>
         <input id="fileInputCamera" type="file" accept="image/*" capture="environment" hidden>
 
-<<<<<<< HEAD
         <input id="messageInput" class="message-input" type="text" placeholder="Ask AuditIQ a question about your files…" autocomplete="off">
 
         <button id="micBtn" class="icon-round-btn" title="Speak instead of typing">
@@ -338,23 +286,9 @@
       </div>
     </div>
   </div>
-=======
-        <input id="messageInput" class="message-input" type="text" placeholder="Type a message…" autocomplete="off">
-
-        <button id="micBtn" class="icon-round-btn" title="Speak instead of typing">🎤</button>
-        <button id="sendBtn" class="send-btn" title="Send">➤</button>
-      </footer>
-
-    </main>
-  </div>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="app.js"></script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> ad9c3db8becf9ae68dfc1ef4bf1e3b8f8d8e5b3a
