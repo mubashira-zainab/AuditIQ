@@ -83,7 +83,7 @@ function updateAccountButtonAvatar(email) {
     if (userObj && typeof userObj === "object" && userObj.avatar) {
       accountImg.src = userObj.avatar;
     } else {
-      accountImg.src = "/static/user-icon.png";
+      accountImg.src = "user-icon.png";
     }
   }
 }
