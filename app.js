@@ -2,7 +2,7 @@
 window.addEventListener('DOMContentLoaded', () => {
 const apiBaseInput = el("apiBase");
 if (apiBaseInput && !apiBaseInput.value) {
-  apiBaseInput.value = "http://127.0.0.1:8000";
+  apiBaseInput.value = "https://auditiq-f8t8.onrender.com";
 }
 
   const apiKeyInput = el("apiKey");
@@ -20,7 +20,7 @@ let selectedFile = null;
 let chartCounter = 0;
 
 const el = (id) => document.getElementById(id);
-const apiBase = () => el("apiBase")?.value.trim().replace(/\/$/, "") || "http://127.0.0.1:8000";
+const apiBase = () => el("apiBase")?.value.trim().replace(/\/$/, "") || "https://auditiq-f8t8.onrender.com";
 
 // ============ AUTHENTICATION & USER MANAGEMENT ============
 const loginScreen = el("loginScreen");
