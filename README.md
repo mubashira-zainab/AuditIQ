@@ -49,12 +49,10 @@
 
 ## Architecture
 
-```
-┌─────────────────────────────┐        HTTPS/JSON           ┌──────────────────────────────┐
-│   Frontend (GitHub Pages)   │ ────────────────────────▶ │   Backend (Render)            │
-│   index.html + style.css    │ ◀──────────────────────── │   FastAPI (app/)               │
-│   + app.js                  │                           │   Groq LLM · yfinance · gTTS   │
-└─────────────────────────────┘                           └──────────────────────────────┘
+```mermaid
+flowchart LR
+    A["Frontend (GitHub Pages)<br/>index.html + style.css + app.js"] -- "HTTPS / JSON" --> B["Backend (Render)<br/>FastAPI (app/)<br/>Groq LLM · yfinance · gTTS"]
+    B -- "HTTPS / JSON" --> A
 ```
 
 The frontend is a static site with no backend logic of its own — it calls the
