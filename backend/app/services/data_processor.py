@@ -67,10 +67,24 @@ def summarize_dataframe(df: pd.DataFrame) -> dict:
 
     target_col = numeric_cols[-1]
     series = df[target_col].fillna(0).astype(float).tolist()
+    
+    # Statistical Variance Analysis
+    if len(series) > 1:
+        mean_val = float(pd.Series(series).mean())
+        std_val = float(pd.Series(series).std())
+        # Simple z-score anomaly detection (values > 2 std dev)
+        anomalies = [i for i, x in enumerate(series) if std_val > 0 and abs(x - mean_val) / std_val > 2]
+    else:
+        mean_val = float(series[0]) if series else 0.0
+        std_val = 0.0
+        anomalies = []
 
     return {
         "target_column": str(target_col),
         "total": float(df[target_col].sum()),
+        "mean_variance": mean_val,
+        "std_deviation": std_val,
+        "anomaly_indices": anomalies,
         "row_count": int(len(df)),
         "series": series,
         "preview_text": df.head(10).to_string(),

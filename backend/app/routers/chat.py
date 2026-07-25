@@ -56,4 +56,11 @@ async def get_chat_history(
             "messages": session.extra.get("messages", [])
         }
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        # Graceful fallback instead of 404 crash
+        return {
+            "session_id": session_id,
+            "upload": None,
+            "analysis": None,
+            "messages": [],
+            "recovered": True
+        }

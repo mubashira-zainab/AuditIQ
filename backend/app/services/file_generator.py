@@ -5,12 +5,17 @@ import uuid
 import logging
 from pathlib import Path
 
+import base64
+import io
+
 try:
     import pandas as pd
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    from fpdf import FPDF
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet
 except ImportError:
     pass
 
@@ -66,11 +71,17 @@ def process_dynamic_files(llm_response: str, host_url: str) -> str:
                 plt.legend()
                 
             plt.tight_layout()
-            plt.savefig(file_path)
+            # Save plot to in-memory buffer instead of file
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', bbox_inches='tight')
             plt.close()
+            buf.seek(0)
             
-            url = f"{host_url}/static/{filename}"
-            img_md = f"\n\n![Generated Chart]({url})\n\n"
+            # Encode as base64 string
+            img_b64 = base64.b64encode(buf.read()).decode('utf-8')
+            img_uri = f"data:image/png;base64,{img_b64}"
+            
+            img_md = f"\n\n![Generated Chart]({img_uri})\n\n"
             llm_response = llm_response.replace(match.group(0), img_md)
         except Exception as e:
             logger.error("Failed to generate chart: %s", e)
@@ -83,13 +94,25 @@ def process_dynamic_files(llm_response: str, host_url: str) -> str:
         filename = f"generated_report_{uuid.uuid4().hex[:6]}.pdf"
         file_path = STATIC_DIR / filename
         try:
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", size=11)
-            # Remove Markdown boldness since FPDF doesn't natively parse MD strings easily
-            clean_text = raw_text.replace("**", "").replace("*", "")
-            pdf.multi_cell(0, 7, txt=clean_text.encode('latin-1', 'replace').decode('latin-1'))
-            pdf.output(str(file_path))
+            doc = SimpleDocTemplate(str(file_path), pagesize=letter)
+            styles = getSampleStyleSheet()
+            story = []
+            
+            # Simple conversion of markdown lines to reportlab Paragraphs
+            lines = raw_text.split('\n')
+            for line in lines:
+                if line.strip():
+                    # Handle basic bolding mapping to reportlab bold tags
+                    clean_line = line.replace('**', '<b>', 1).replace('**', '</b>', 1)
+                    if clean_line.startswith('#'):
+                        story.append(Paragraph(clean_line.replace('#', '').strip(), styles['Heading1']))
+                    elif clean_line.startswith('-'):
+                        story.append(Paragraph(clean_line, styles['Bullet']))
+                    else:
+                        story.append(Paragraph(clean_line, styles['Normal']))
+                    story.append(Spacer(1, 6))
+                    
+            doc.build(story)
             
             url = f"{host_url}/static/{filename}"
             link_md = f"\n\n**[📄 Download Official Generated PDF Report]({url})**\n\n"

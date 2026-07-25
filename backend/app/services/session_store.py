@@ -15,7 +15,6 @@ from typing import Any
 
 from app.core.exceptions import SessionNotFoundError
 
-
 @dataclass
 class Session:
     session_id: str

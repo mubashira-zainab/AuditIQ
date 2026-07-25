@@ -32,7 +32,7 @@ from app.routers import analysis, audio, chat, health, report, upload
 
 # Set default Environment variables for Groq Key & Render Backend URL
 os.environ.setdefault("GROQ_API_KEY", "")
-os.environ.setdefault("BACKEND_URL", "http://127.0.0.1:8000")
+os.environ.setdefault("BACKEND_URL", "https://auditiq-f8t8.onrender.com")
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -146,4 +146,5 @@ def create_app() -> FastAPI:
         logger.warning("Frontend root folder not found at %s", PROJECT_ROOT)
 
     return app
+
 app = create_app()

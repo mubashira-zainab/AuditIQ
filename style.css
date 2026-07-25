@@ -1015,27 +1015,52 @@ canvas.bubble-chart {
 
 /* ============ RESPONSIVE LAYOUT ============ */
 @media (max-width: 760px) {
+  .mobile-only {
+    display: flex !important;
+  }
+  .body-layout {
+    position: relative;
+    height: calc(100vh - 68px); /* Fill remaining space below header */
+    overflow: hidden;
+  }
   .sidebar {
-    position: fixed;
-    top: 68px;
+    position: absolute;
+    top: 0;
     left: 0;
     bottom: 0;
-    z-index: 15;
+    z-index: 100;
+    width: 280px;
+    background: var(--panel);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
   }
   .sidebar.open {
     transform: translateX(0);
   }
+  .main-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill body-layout completely */
+    overflow: hidden; /* Stop main area from scrolling */
+  }
   .kpi-row {
     grid-template-columns: 1fr;
     padding: 16px 16px 0;
+    flex-shrink: 0;
   }
   .thread {
+    flex: 1; /* Take up all remaining space */
     padding: 16px;
+    overflow-y: auto; /* Ensure only the thread scrolls */
   }
   .composer {
     padding: 12px 16px;
+    flex-shrink: 0; /* Never allow composer to shrink */
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 0;
   }
   .settings-panel {
     position: fixed;

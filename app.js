@@ -357,6 +357,29 @@ async function loadChatHistory(id, targetElement) {
     
     if (!res.ok) throw new Error(data.detail || "Failed to load history");
 
+    if (data.recovered) {
+        // Silently handle missing backend history by starting fresh
+        const loggedInUser = getLoggedInUser();
+        const users = JSON.parse(localStorage.getItem("auditiq-users") || "{}");
+        const userObj = users[loggedInUser];
+        let name = loggedInUser || "there";
+        if (userObj && typeof userObj === "object" && userObj.username) {
+            name = userObj.username;
+        } else if (loggedInUser.includes("@")) {
+            name = loggedInUser.split("@")[0];
+        }
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        
+        thread.innerHTML = `
+          <div class="msg assistant">
+            <div class="msg-avatar">AI</div>
+            <div class="msg-bubble animate-bubble" id="initialWelcomeText">
+              Welcome back ${name}! Your previous session data could not be recovered, but you can upload a new ledger or ask a question to continue.
+            </div>
+          </div>`;
+        return;
+    }
+
     if (data.upload) {
         uploadData = data.upload;
         addUserMessage(`<div class="file-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg> <strong>${escapeHtml(uploadData.filename || 'Uploaded File')}</strong></div>`, false);
@@ -380,8 +403,28 @@ async function loadChatHistory(id, targetElement) {
         updateKpis(data.analysis);
     }
   } catch (err) {
-    console.error("Failed to fetch history for session:", id, err);
-    addAssistantMessage(`<p>✗ Could not load session history: ${escapeHtml(err.message)}</p>`, false);
+    // Silent recovery — never show raw error to user
+    console.error("Session history unavailable for:", id, err.message);
+    const loggedInUser = getLoggedInUser();
+    const users = JSON.parse(localStorage.getItem("auditiq-users") || "{}");
+    const userObj = users[loggedInUser];
+    let name = loggedInUser || "there";
+    if (userObj && typeof userObj === "object" && userObj.username) {
+      name = userObj.username;
+    } else if (loggedInUser && loggedInUser.includes("@")) {
+      name = loggedInUser.split("@")[0];
+    }
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    const thread = el("thread");
+    if (thread) {
+      thread.innerHTML = `
+        <div class="msg assistant">
+          <div class="msg-avatar">AI</div>
+          <div class="msg-bubble animate-bubble">
+            Welcome back, ${escapeHtml(name)}! This session was cleared when the server restarted. You can upload a new ledger or ask a question to continue.
+          </div>
+        </div>`;
+    }
   }
 }
 
@@ -444,6 +487,14 @@ if (themeToggle) {
 if (el("settingsToggle")) {
   el("settingsToggle").addEventListener("click", () => {
     el("settingsPanel")?.classList.toggle("open");
+  });
+}
+
+const sidebarToggleBtn = el("sidebarToggleBtn");
+const chatSidebar = el("chatSidebar");
+if (sidebarToggleBtn && chatSidebar) {
+  sidebarToggleBtn.addEventListener("click", () => {
+    chatSidebar.classList.toggle("open");
   });
 }
 
