@@ -1200,15 +1200,3 @@ function downloadAuditPDF() {
     document.body.removeChild(link);
 }
 
-// --- Clear / Delete History Function ---
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-if (clearHistoryBtn) {
-    clearHistoryBtn.addEventListener('click', () => {
-        if (confirm("Are you sure you want to delete all recent chat history?")) {
-            localStorage.removeItem('auditiq_sessions');
-            const recentsList = document.getElementById('recentsList');
-            if (recentsList) recentsList.innerHTML = '';
-            alert("Chat history cleared successfully.");
-        }
-    });
-}
