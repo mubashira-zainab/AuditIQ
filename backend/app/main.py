@@ -14,6 +14,15 @@ from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+import time
+from collections import defaultdict
+
+metrics = {
+    "total_requests": 0,
+    "total_errors": 0,
+    "endpoints": defaultdict(int),
+    "latencies": [],
+}
 
 # Dynamic library imports for automatic file & chart generation
 try:
@@ -29,6 +38,8 @@ from app.config import get_settings
 from app.core.exceptions import AppError
 from app.logging_config import configure_logging
 from app.routers import analysis, audio, chat, health, report, upload
+from app.db import engine
+from app import models
 
 # Set default Environment variables for Groq Key & Render Backend URL
 os.environ.setdefault("GROQ_API_KEY", "")
@@ -55,6 +66,26 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    @app.middleware("http")
+    async def observability_middleware(request: Request, call_next):
+        start_time = time.time()
+        metrics["total_requests"] += 1
+        metrics["endpoints"][request.url.path] += 1
+        
+        try:
+            response = await call_next(request)
+            if response.status_code >= 400:
+                 metrics["total_errors"] += 1
+            return response
+        except Exception as e:
+            metrics["total_errors"] += 1
+            raise e
+        finally:
+            latency = time.time() - start_time
+            metrics["latencies"].append(latency)
+            if len(metrics["latencies"]) > 1000:
+                metrics["latencies"].pop(0)
 
     # Static files endpoint for serving backend uploads/downloads
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -129,6 +160,17 @@ def create_app() -> FastAPI:
             return FileResponse(fav)
         return JSONResponse(status_code=404, content={"detail": "Favicon not found"})
 
+    @app.get("/api/metrics")
+    async def get_metrics():
+        avg_latency = sum(metrics["latencies"]) / len(metrics["latencies"]) if metrics["latencies"] else 0
+        return {
+            "total_requests": metrics["total_requests"],
+            "total_errors": metrics["total_errors"],
+            "error_rate": f"{(metrics['total_errors'] / metrics['total_requests'] * 100):.2f}%" if metrics["total_requests"] > 0 else "0%",
+            "avg_latency_seconds": round(avg_latency, 4),
+            "endpoints": dict(metrics["endpoints"])
+        }
+
     @app.exception_handler(AppError)
     async def handle_app_error(request: Request, exc: AppError) -> JSONResponse:
         logger.info("Handled error on %s: %s", request.url.path, exc.message)
@@ -136,6 +178,7 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     async def on_startup() -> None:
+        models.Base.metadata.create_all(bind=engine)
         settings.storage_dir.mkdir(parents=True, exist_ok=True)
         logger.info("%s started (env=%s, storage=%s)", settings.app_name, settings.environment, settings.storage_dir)
 

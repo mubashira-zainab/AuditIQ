@@ -62,6 +62,11 @@ class AnalyzeResponse(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     mode: str  # "live" | "offline"
+    message_id: int | None = None
+
+class FeedbackRequest(BaseModel):
+    message_id: int
+    feedback: str # 'like' or 'dislike'
 
 
 class HealthResponse(BaseModel):

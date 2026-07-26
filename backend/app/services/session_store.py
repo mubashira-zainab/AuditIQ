@@ -1,19 +1,15 @@
 """
-In-memory session store.
-
-This is deliberately simple: a single-process dict guarded by a lock, with
-lazy TTL expiry. It's the right amount of infrastructure for a local/single-
-instance MVP. If this ever needs to run multi-process or survive restarts,
-swap this class for a Redis-backed implementation -- nothing outside this
-file needs to change, since routers only ever talk to `SessionStore`.
+Persistent session store using SQLAlchemy and SQLite.
 """
-import threading
-import time
 import uuid
+import time
 from dataclasses import dataclass, field
 from typing import Any
 
 from app.core.exceptions import SessionNotFoundError
+from app.db import SessionLocal
+from app.models import DBSession, DBMessage
+
 
 @dataclass
 class Session:
@@ -28,57 +24,109 @@ class Session:
 
 class SessionStore:
     def __init__(self, ttl_minutes: int = 120):
-        self._sessions: dict[str, Session] = {}
-        self._lock = threading.Lock()
-        self._ttl_seconds = ttl_minutes * 60
+        # We don't use ttl in persistent DB, but keep signature for compatibility
+        pass
 
     @staticmethod
     def new_id() -> str:
         return str(uuid.uuid4())
 
     def create(self, session_id: str, file_path: str, upload: dict[str, Any]) -> Session:
-        session = Session(
-            session_id=session_id,
-            created_at=time.time(),
-            file_path=file_path,
-            upload=upload,
-        )
-        with self._lock:
-            self._sessions[session.session_id] = session
-        return session
+        db = SessionLocal()
+        try:
+            db_sess = DBSession(
+                session_id=session_id,
+                file_path=file_path,
+                upload_data=upload
+            )
+            db.add(db_sess)
+            db.commit()
+            return self.get(session_id)
+        finally:
+            db.close()
 
     def get(self, session_id: str) -> Session:
-        with self._lock:
-            session = self._sessions.get(session_id)
-
-        if session is None:
-            raise SessionNotFoundError(f"No session found for id '{session_id}'. Upload a file first.")
-
-        if time.time() - session.created_at > self._ttl_seconds:
-            self.delete(session_id)
-            raise SessionNotFoundError(f"Session '{session_id}' expired. Upload the file again.")
-
-        return session
+        db = SessionLocal()
+        try:
+            db_sess = db.query(DBSession).filter(DBSession.session_id == session_id).first()
+            if not db_sess:
+                raise SessionNotFoundError(f"No session found for id '{session_id}'. Upload a file first.")
+            
+            messages = []
+            for m in db_sess.messages:
+                messages.append({
+                    "id": m.id,
+                    "role": m.role,
+                    "content": m.content,
+                    "feedback": m.feedback,
+                    "created_at": m.created_at.isoformat() if m.created_at else None
+                })
+                
+            return Session(
+                session_id=db_sess.session_id,
+                created_at=db_sess.created_at.timestamp() if db_sess.created_at else time.time(),
+                file_path=db_sess.file_path,
+                upload=db_sess.upload_data or {},
+                analysis=db_sess.analysis_data,
+                language=db_sess.language,
+                extra={"messages": messages}
+            )
+        finally:
+            db.close()
 
     def update(self, session_id: str, **fields: Any) -> Session:
-        session = self.get(session_id)
-        for key, value in fields.items():
-            setattr(session, key, value)
-        return session
+        db = SessionLocal()
+        try:
+            db_sess = db.query(DBSession).filter(DBSession.session_id == session_id).first()
+            if not db_sess:
+                raise SessionNotFoundError(f"No session found for id '{session_id}'.")
+            
+            if "upload" in fields:
+                db_sess.upload_data = fields["upload"]
+            if "analysis" in fields:
+                db_sess.analysis_data = fields["analysis"]
+            if "language" in fields:
+                db_sess.language = fields["language"]
+            
+            db.commit()
+            return self.get(session_id)
+        finally:
+            db.close()
 
     def delete(self, session_id: str) -> None:
-        with self._lock:
-            self._sessions.pop(session_id, None)
+        db = SessionLocal()
+        try:
+            db_sess = db.query(DBSession).filter(DBSession.session_id == session_id).first()
+            if db_sess:
+                db.delete(db_sess)
+                db.commit()
+        finally:
+            db.close()
 
     def sweep_expired(self) -> int:
-        """Remove all expired sessions. Returns the number removed."""
-        now = time.time()
-        with self._lock:
-            expired = [sid for sid, s in self._sessions.items() if now - s.created_at > self._ttl_seconds]
-            for sid in expired:
-                del self._sessions[sid]
-        return len(expired)
+        return 0  # No expiry for persistent store
+        
+    def add_message(self, session_id: str, role: str, content: str):
+        db = SessionLocal()
+        try:
+            msg = DBMessage(session_id=session_id, role=role, content=content)
+            db.add(msg)
+            db.commit()
+            return msg.id
+        finally:
+            db.close()
+            
+    def update_message_feedback(self, message_id: int, feedback: str):
+        db = SessionLocal()
+        try:
+            msg = db.query(DBMessage).filter(DBMessage.id == message_id).first()
+            if msg:
+                msg.feedback = feedback
+                db.commit()
+                return True
+            return False
+        finally:
+            db.close()
 
-
-# Single shared instance for the process -- imported by routers via app.dependencies.
+# Single shared instance
 session_store = SessionStore()

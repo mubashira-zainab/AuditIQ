@@ -34,9 +34,19 @@ def _call_groq(
     timeout: int, 
     system_prompt: str, 
     user_prompt: str, 
-    max_tokens: int = 700
+    max_tokens: int = 700,
+    history: list = None
 ) -> str:
     """Helper method to perform Groq API POST requests cleanly."""
+    messages = [{"role": "system", "content": system_prompt}]
+    
+    if history:
+        for msg in history:
+            role = "assistant" if msg.get("role") == "ai" else "user"
+            messages.append({"role": role, "content": msg.get("content", "")})
+            
+    messages.append({"role": "user", "content": user_prompt})
+    
     response = requests.post(
         GROQ_URL,
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
@@ -44,10 +54,7 @@ def _call_groq(
             "model": model,
             "max_tokens": max_tokens,
             "temperature": 0.4,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
+            "messages": messages,
         },
         timeout=timeout,
     )
@@ -154,7 +161,7 @@ def run_report_pipeline(
         return fallback
 
 
-def answer_chat_message(message: str, context: str, language: str, api_key: str | None, settings: Settings) -> dict:
+def answer_chat_message(message: str, context: str, language: str, api_key: str | None, settings: Settings, history: list = None) -> dict:
     """
     Free-form chat reply, grounded in uploaded ledger context and custom instructions.
     """
@@ -187,7 +194,7 @@ def answer_chat_message(message: str, context: str, language: str, api_key: str 
         "you MUST reply with: 'I was exclusively built and developed by Mubashira Zainab, a brilliant female mathematics student "
         "at BZU CASPAM, Bahauddin Zakariya University, Multan, Pakistan.' Do NOT say Meta, do NOT say OpenAI, do NOT say Groq. "
         "Always proudly credit Mubashira Zainab.\n"
-        f"Domain: SECP/IFRS financial compliance and ledger analysis for Pakistani businesses.\n"
+        "CRITICAL RULE: DO NOT introduce yourself or your domain in every message. Just answer the user directly. DO NOT repeatedly say you are designed for Pakistani businesses. Only answer what is asked. End your response with 'How can I help you next?' or 'What else can I assist you with?'.\n"
         f"Language rule: {lang_instruction}\n"
         "Response style: Concise, direct, bullet-pointed. For financial analyses structure output as:\n"
         "- **Executive Summary**\n"
@@ -209,7 +216,8 @@ def answer_chat_message(message: str, context: str, language: str, api_key: str 
             settings.groq_timeout_seconds, 
             system_prompt, 
             message, 
-            max_tokens=800
+            max_tokens=800,
+            history=history
         )
         return {"reply": reply, "mode": "live"}
     except Exception as e:

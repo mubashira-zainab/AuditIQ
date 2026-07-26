@@ -402,6 +402,16 @@ async function loadChatHistory(id, targetElement) {
         renderAnalysisBubble(analysisBubble, data.analysis);
         updateKpis(data.analysis);
     }
+    
+    if (data.messages && data.messages.length > 0) {
+        data.messages.forEach(m => {
+            if (m.role === 'user') {
+                addUserMessage(`<p>${escapeHtml(m.content)}</p>`, false, m.content);
+            } else {
+                addAssistantMessage(formatChatReply(m.content), false, m.id);
+            }
+        });
+    }
   } catch (err) {
     // Silent recovery — never show raw error to user
     console.error("Session history unavailable for:", id, err.message);
@@ -534,11 +544,23 @@ function onFileSelected(file) {
   uploadFile(file);
 }
 
-function addUserMessage(html, animate = true) {
+function addUserMessage(html, animate = true, rawText = "") {
   const thread = el("thread");
   const wrap = document.createElement("div");
   wrap.className = "msg user";
-  wrap.innerHTML = `<div class="msg-avatar">U</div><div class="msg-bubble ${animate ? "animate-bubble" : ""}">${html}</div>`;
+  
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  const safeText = escapeHtml(rawText || temp.innerText);
+  
+  wrap.innerHTML = `<div class="msg-avatar">U</div>
+    <div class="msg-bubble ${animate ? "animate-bubble" : ""}">
+      ${html}
+      <div class="msg-actions">
+        <button class="action-btn copy-btn" title="Copy" data-text="${safeText}">📋</button>
+        <button class="action-btn edit-btn" title="Edit" data-text="${safeText}">✏️</button>
+      </div>
+    </div>`;
   if (thread) {
     thread.appendChild(wrap);
     thread.scrollTop = thread.scrollHeight;
@@ -546,17 +568,81 @@ function addUserMessage(html, animate = true) {
   return wrap;
 }
 
-function addAssistantMessage(html, animate = true) {
+function addAssistantMessage(html, animate = true, messageId = null) {
   const thread = el("thread");
   const wrap = document.createElement("div");
   wrap.className = "msg assistant";
-  wrap.innerHTML = `<div class="msg-avatar">AI</div><div class="msg-bubble ${animate ? "animate-bubble" : ""}">${html}</div>`;
+  
+  let actionHtml = `<div class="msg-actions"><button class="action-btn copy-btn" title="Copy">📋</button></div>`;
+  if (messageId) {
+    actionHtml = `<div class="msg-actions">
+      <button class="action-btn like-btn" title="Like" data-id="${messageId}">👍</button>
+      <button class="action-btn dislike-btn" title="Dislike" data-id="${messageId}">👎</button>
+      <button class="action-btn copy-btn" title="Copy">📋</button>
+    </div>`;
+  }
+  
+  wrap.innerHTML = `<div class="msg-avatar">AI</div>
+    <div class="msg-bubble ${animate ? "animate-bubble" : ""}">
+      ${html}
+      ${actionHtml}
+    </div>`;
   if (thread) {
     thread.appendChild(wrap);
     thread.scrollTop = thread.scrollHeight;
   }
   return wrap;
 }
+
+// Global chat action handler
+document.getElementById('appRoot')?.addEventListener('click', async (e) => {
+  const target = e.target.closest('.action-btn');
+  if (!target) return;
+  
+  if (target.classList.contains('copy-btn')) {
+    let text = target.dataset.text;
+    if (!text) {
+        const clone = target.closest('.msg-bubble').cloneNode(true);
+        const actions = clone.querySelector('.msg-actions');
+        if (actions) actions.remove();
+        text = clone.innerText.trim();
+    }
+    navigator.clipboard.writeText(text);
+    const oldTitle = target.title;
+    target.title = "Copied!";
+    setTimeout(() => target.title = oldTitle, 2000);
+  }
+  else if (target.classList.contains('edit-btn')) {
+    const text = target.dataset.text;
+    const input = el('messageInput');
+    if (input) {
+      input.value = text;
+      input.focus();
+    }
+  }
+  else if (target.classList.contains('like-btn') || target.classList.contains('dislike-btn')) {
+    const msgId = target.dataset.id;
+    const feedback = target.classList.contains('like-btn') ? 'like' : 'dislike';
+    if (!msgId) return;
+    
+    target.style.transform = 'scale(1.2)';
+    setTimeout(()=>target.style.transform = 'scale(1)', 200);
+    
+    try {
+      const res = await fetch(`${apiBase()}/api/chat/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message_id: parseInt(msgId), feedback: feedback })
+      });
+      const data = await res.json();
+      if (res.ok && data.reply) {
+         addAssistantMessage(`<p>${escapeHtml(data.reply)}</p>`, true);
+      }
+    } catch(err) {
+      console.error("Feedback failed", err);
+    }
+  }
+});
 
 function typingIndicator() {
   return `<div class="typing-dots"><span></span><span></span><span></span></div>`;
@@ -859,8 +945,19 @@ async function sendChatMessage(text, isVoice = false) {
     }
 
     const replyHtml = formatChatReply(data.reply);
+    const msgId = data.message_id || "";
+    let actionHtml = `<div class="msg-actions"><button class="action-btn copy-btn" title="Copy">📋</button></div>`;
+    if (msgId) {
+      actionHtml = `<div class="msg-actions">
+        <button class="action-btn like-btn" title="Like" data-id="${msgId}">👍</button>
+        <button class="action-btn dislike-btn" title="Dislike" data-id="${msgId}">👎</button>
+        <button class="action-btn copy-btn" title="Copy">📋</button>
+      </div>`;
+    }
+    
     thinking.querySelector(".msg-bubble").innerHTML = `
-      <p>${replyHtml}</p>
+      ${replyHtml}
+      ${actionHtml}
       <div class="bubble-actions">
         <button class="mini-btn" data-role="speak-reply">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
