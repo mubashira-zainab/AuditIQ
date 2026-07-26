@@ -29,18 +29,20 @@
       <form id="authForm" class="auth-form" onsubmit="return false;">
         <h2 id="authTitle">Welcome Back</h2>
         <p id="authSubtitle" class="auth-subtitle">Enter your credentials to access your financial intelligence desk.</p>
-<div class="input-group">
-  <label for="authUsername">Username</label>
-  <div class="input-wrapper">
-    <span class="input-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-    </span>
-    <input type="text" id="authUsername" placeholder="Username" autocomplete="username" required />
-  </div>
-</div>
+        
+        <div class="input-group">
+          <label for="authUsername">Username</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <input type="text" id="authUsername" placeholder="Username" autocomplete="username" required />
+          </div>
+        </div>
+
         <div class="input-group">
           <label for="authEmail">Email Address</label>
           <div class="input-wrapper">
@@ -65,7 +67,6 @@
             </span>
             <input type="password" id="authPassword" placeholder="••••••••" required autocomplete="current-password">
             <button type="button" id="togglePasswordBtn" class="toggle-password-btn" title="Toggle password visibility">
-              <!-- Dynamic Eye Icon (SVG) -->
               <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
@@ -101,11 +102,10 @@
       <button id="settingsToggle" class="icon-btn" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
       <button id="themeToggle" class="icon-btn" title="Toggle Theme">
-        <!-- SVG Moon (Dark theme toggle icon) -->
         <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
@@ -124,34 +124,32 @@
 
     <!-- ===== SIDEBAR / CHAT HISTORY DRAWER ===== -->
     <aside id="chatSidebar" class="sidebar" style="display: flex; flex-direction: column;">
-  <!-- Upar wala hissa (New Chat aur Recent Audits) -->
-  <div style="flex: 1;">
-    <button id="newChatBtn" class="new-chat-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-      <span>New Chat</span>
-    </button>
-    
-    <div class="recents-container" style="margin-top: 20px;">
-      <p class="recents-title" style="margin-bottom: 8px;">Recent Audits</p>
-      <ul id="recentsList" class="recents-list" style="display: flex; flex-direction: column; gap: 8px;">
-        <!-- Dynamically populated via app.js -->
-      </ul>
-    </div>
-  </div>
+      <div style="flex: 1;">
+        <button id="newChatBtn" class="new-chat-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Chat</span>
+        </button>
+        
+        <div class="recents-container" style="margin-top: 20px;">
+          <p class="recents-title" style="margin-bottom: 8px;">Recent Audits</p>
+          <ul id="recentsList" class="recents-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Dynamically populated via app.js -->
+          </ul>
+        </div>
+      </div>
 
-  <!-- Neeche wala hissa (Account Button at the Bottom) -->
-  <div style="padding-top: 10px; border-top: 1px solid var(--border-color, #333);">
-    <button id="accountBtn" class="new-chat-btn" style="display: flex; align-items: center; gap: 10px; width: 100%;">
-      <img src="/static/user-icon.png" alt="Account" style="width: 20px; height: 20px; border-radius: 50%;">
-      <span>Account</span>
-    </button>
-  </div>
-</aside>
+      <div style="padding-top: 10px; border-top: 1px solid var(--border-color, #333);">
+        <button id="accountBtn" class="new-chat-btn" style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <img src="/static/user-icon.png" alt="Account" style="width: 20px; height: 20px; border-radius: 50%;">
+          <span>Account</span>
+        </button>
+      </div>
+    </aside>
 
-    <!-- ===== SETTINGS PANEL (collapsible) ===== -->
+    <!-- ===== SETTINGS PANEL ===== -->
     <aside id="settingsPanel" class="settings-panel">
       <h3>Session Settings</h3>
 
@@ -201,11 +199,23 @@
 
       <!-- Chat thread -->
       <section class="thread" id="thread">
-        <div class="msg assistant">
+        <div class="msg assistant message-card">
           <div class="msg-avatar">AI</div>
           <div class="msg-bubble animate-bubble">
-            <p> Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf ./ png ./ jpg ./ jpeg ) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
+            <p>Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf / .png / .jpg / .jpeg) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
             <p style="color:var(--text-mid); font-size:12.5px;">Reports can be generated in English, Roman Urdu, or Urdu. Set your preferences in settings.</p>
+          </div>
+          <!-- Gemini Style Action Buttons (Appears on Hover via CSS) -->
+          <div class="message-actions">
+            <button class="action-btn" title="Like" onclick="sendFeedback(this, 'like')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+            </button>
+            <button class="action-btn" title="Dislike" onclick="sendFeedback(this, 'dislike')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+            </button>
+            <button class="action-btn" title="Copy Text" onclick="copyMessage(this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
           </div>
         </div>
       </section>

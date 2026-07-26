@@ -890,51 +890,97 @@ canvas.bubble-chart {
   transform: scale(0.92);
 }
 
+/* ============ PROFESSIONALLY DESIGNED ATTACHMENT / UPLOAD MENU ============ */
+.chat-input-wrapper, 
+.input-container, 
+.attach-wrapper {
+  position: relative !important;
+}
+
+.upload-menu, 
+.attachment-options, 
+.popup-menu, 
 .attach-menu {
-  position: absolute;
-  bottom: 56px;
-  left: 0;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  display: none;
-  flex-direction: column;
-  min-width: 260px;
-  overflow: hidden;
-  z-index: 20;
+  display: none !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  align-items: stretch !important;
+  background: var(--panel) !important;
+  padding: 8px !important;
+  border-radius: 14px !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  position: absolute !important;
+  bottom: calc(100% + 12px) !important;
+  left: 0 !important;
+  min-width: 220px !important;
+  z-index: 999 !important;
+  animation: menuPopUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.attach-menu.open {
-  display: flex;
+/* Agar dynamically .open class toggle ho toh yeh show ho */
+.attach-menu.open,
+.upload-menu.open,
+.attachment-options.open,
+.popup-menu.open {
+  display: flex !important;
 }
 
+@keyframes menuPopUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.upload-menu button, 
+.attachment-options button, 
+.popup-menu button,
 .attach-menu button {
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 12px 18px;
-  font-size: 13.5px;
-  font-family: var(--font-body);
-  color: var(--text-hi);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: background 0.15s;
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-hi) !important;
+  cursor: pointer !important;
+  font-size: 13.5px !important;
+  font-family: var(--font-body) !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
 }
 
-.attach-menu button:hover {
-  background: var(--panel-alt);
-  color: var(--accent);
-}
-
+.upload-menu button svg, 
+.attachment-options button svg, 
+.popup-menu button svg,
 .attach-menu button svg {
-  color: var(--text-mid);
+  width: 16px !important;
+  height: 16px !important;
+  stroke: var(--text-mid) !important;
+  transition: stroke 0.15s ease !important;
 }
 
+.upload-menu button:hover, 
+.attachment-options button:hover, 
+.popup-menu button:hover,
+.attach-menu button:hover {
+  background: var(--panel-alt) !important;
+  color: var(--accent) !important;
+}
+
+.upload-menu button:hover svg, 
+.attachment-options button:hover svg, 
+.popup-menu button:hover svg,
 .attach-menu button:hover svg {
-  color: var(--accent);
+  stroke: var(--accent) !important;
 }
 
 .message-input {
@@ -1041,7 +1087,7 @@ canvas.bubble-chart {
   }
   .body-layout {
     position: relative;
-    height: calc(100vh - 68px); /* Fill remaining space below header */
+    height: calc(100vh - 68px);
     overflow: hidden;
   }
   .sidebar {
@@ -1062,8 +1108,8 @@ canvas.bubble-chart {
   .main-area {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Fill body-layout completely */
-    overflow: hidden; /* Stop main area from scrolling */
+    height: 100%;
+    overflow: hidden;
   }
   .kpi-row {
     grid-template-columns: 1fr;
@@ -1071,13 +1117,13 @@ canvas.bubble-chart {
     flex-shrink: 0;
   }
   .thread {
-    flex: 1; /* Take up all remaining space */
+    flex: 1;
     padding: 16px;
-    overflow-y: auto; /* Ensure only the thread scrolls */
+    overflow-y: auto;
   }
   .composer {
     padding: 12px 16px;
-    flex-shrink: 0; /* Never allow composer to shrink */
+    flex-shrink: 0;
     background: var(--bg);
     border-top: 1px solid var(--border);
     position: sticky;
@@ -1258,38 +1304,3 @@ input.profile-val:focus {
 .msg-bubble a:hover {
   opacity: 0.8;
 }
-.chat-input-wrapper, .input-container {
-    position: relative !important;
-}
-/* --- Fix Attachment Upload Buttons Layout --- */
-.upload-menu, .attachment-options, .popup-menu, .chat-input-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 8px !important;
-    align-items: center !important;
-    background: #101B20 !important;
-    padding: 8px 12px !important;
-    border-radius: 8px !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
-    position: absolute !important;
-    bottom: 55px !important;
-    left: 10px !important;
-    z-index: 999 !important;
-}
-
-.upload-menu button, .attachment-options button, .popup-menu button {
-    background: transparent !important;
-    border: none !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    font-size: 13px !important;
-    white-space: nowrap !important;
-    padding: 6px 10px !important;
-    border-radius: 4px !important;
-}
-
-.upload-menu button:hover, .attachment-options button:hover, .popup-menu button:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-.
