@@ -1,163 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditIQ — Financial Intelligence Desk</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AuditIQ — AI-powered financial auditing, compliance analysis and forecasting for Pakistani businesses. Built by Mubashira Zainab, BZU CASPAM.">
+  <title>AuditIQ — Financial Intelligence Desk</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body data-theme="dark">
 
-    <!-- ===== LOGIN / SIGNUP SCREEN ===== -->
-    <div id="loginScreen" class="login-screen">
-        <div class="login-container">
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="tabSignIn">Sign In</button>
-                <button class="auth-tab" id="tabSignUp">Create Account</button>
-            </div>
-            
-            <div class="auth-header">
-                <h2 id="authTitle">Welcome Back</h2>
-                <p id="authSubtitle">Enter your credentials to access your financial intelligence desk.</p>
-            </div>
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-            <form id="authForm">
-                <div class="input-group">
-                    <label>USERNAME</label>
-                    <div class="input-field">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="text" id="authUsername" placeholder="Enter username" required>
-                    </div>
-                </div>
+<!-- ===================== CONFIRM MODAL ===================== -->
+<div id="confirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal-box">
+    <h3 id="confirmTitle" class="modal-title">Confirm Action</h3>
+    <p  id="confirmMsg"   class="modal-msg"></p>
+    <div class="modal-actions">
+      <button id="confirmCancel" class="modal-btn secondary">Cancel</button>
+      <button id="confirmOk"     class="modal-btn danger">Delete</button>
+    </div>
+  </div>
+</div>
 
-                <div class="input-group" id="emailGroup" style="display: none;">
-                    <label>EMAIL ADDRESS</label>
-                    <div class="input-field">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <input type="email" id="authEmail" placeholder="Enter your email">
-                    </div>
-                </div>
+<!-- ===================== ACCOUNT MODAL ===================== -->
+<div id="accountModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="accountModalTitle" class="modal-title">My Profile</h3>
+      <button id="closeAccountModal" class="icon-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="account-avatar-wrap">
+      <img id="profileAvatarPreview" src="user-icon.png" alt="Avatar" class="account-avatar">
+      <label class="avatar-upload-label" title="Change photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 0 2-2l2-2h6l2 2h6a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <input type="file" id="avatarUpload" accept="image/*" hidden>
+      </label>
+    </div>
+    <div class="form-group">
+      <label class="form-label">USERNAME</label>
+      <input type="text" id="profileUsername" class="form-input" placeholder="Your display name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">EMAIL</label>
+      <p id="profileEmail" class="form-static"></p>
+    </div>
+    <button id="saveProfileBtn" class="primary-btn" style="width:100%;margin-top:8px;">Save Changes</button>
+  </div>
+</div>
 
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <div class="input-field">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="authPassword" placeholder="••••••••••••" required>
-                    </div>
-                </div>
+<!-- ===================== SETTINGS PANEL ===================== -->
+<div id="settingsPanel" class="settings-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="settings-box">
+    <div class="modal-header">
+      <h3 id="settingsTitle" class="modal-title">⚙️ Settings</h3>
+      <button id="closeSettings" class="icon-btn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
 
-                <button type="submit" id="authSubmitBtn" class="primary-btn">Sign In</button>
-            </form>
+    <div class="settings-section">
+      <h4 class="settings-section-title">AI Configuration</h4>
+      <div class="form-group">
+        <label class="form-label">BACKEND URL</label>
+        <input type="text" id="apiBase" class="form-input" value="https://auditiq-f8t8.onrender.com" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">GROQ API KEY <span class="label-note">(optional — uses backend key)</span></label>
+        <input type="password" id="apiKey" class="form-input" placeholder="gsk_…">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h4 class="settings-section-title">Analysis Preferences</h4>
+      <div class="form-group">
+        <label class="form-label">STOCK TICKER</label>
+        <input type="text" id="ticker" class="form-input" placeholder="e.g. ENGRO, HBL, LUCK">
+      </div>
+      <div class="form-group">
+        <label class="form-label">REPORT LANGUAGE</label>
+        <select id="language" class="form-input">
+          <option value="English">English</option>
+          <option value="Roman Urdu">Roman Urdu</option>
+          <option value="Urdu">اردو (Urdu)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h4 class="settings-section-title">Observability</h4>
+      <div id="metricsPanel" class="metrics-mini">
+        <div class="metric-mini-item"><span class="metric-mini-label">Requests</span><span id="metricRequests" class="metric-mini-val">—</span></div>
+        <div class="metric-mini-item"><span class="metric-mini-label">Errors</span><span id="metricErrors" class="metric-mini-val">—</span></div>
+        <div class="metric-mini-item"><span class="metric-mini-label">Error Rate</span><span id="metricErrorRate" class="metric-mini-val">—</span></div>
+        <div class="metric-mini-item"><span class="metric-mini-label">Avg Latency</span><span id="metricLatency" class="metric-mini-val">—</span></div>
+      </div>
+      <button id="refreshMetricsBtn" class="ghost-btn" style="margin-top:8px;">↻ Refresh Metrics</button>
+    </div>
+
+    <button id="saveSettingsBtn" class="primary-btn" style="width:100%;margin-top:16px;">Save Settings</button>
+  </div>
+</div>
+
+<!-- ===================== LOGIN / SIGNUP ===================== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-container">
+    <div class="login-brand">
+      <img id="loginLogo" src="logo-full-dark.svg" alt="AuditIQ" class="login-logo" onerror="this.style.display='none';document.getElementById('loginLogoText').style.display='block'">
+      <span id="loginLogoText" class="login-logo-text" style="display:none">AuditIQ</span>
+      <p class="login-tagline">Financial Intelligence Desk</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin">Sign In</button>
+        <button class="auth-tab"        id="tabSignup">Create Account</button>
+      </div>
+
+      <div class="auth-header">
+        <h2 id="authTitle">Welcome Back</h2>
+        <p  id="authSubtitle">Enter your credentials to access your financial intelligence desk.</p>
+      </div>
+
+      <form id="authForm">
+        <div class="input-group" id="usernameGroup" style="display:none;">
+          <label class="form-label">USERNAME</label>
+          <div class="input-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" id="authUsername" placeholder="Display name">
+          </div>
         </div>
+
+        <div class="input-group">
+          <label class="form-label">EMAIL ADDRESS</label>
+          <div class="input-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="authEmail" placeholder="you@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="form-label">PASSWORD</label>
+          <div class="input-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="authPassword" placeholder="••••••••••••" required autocomplete="current-password">
+            <button type="button" id="togglePasswordBtn" class="pwd-toggle" title="Show/hide password">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p id="authErrorMsg" class="auth-error" role="alert"></p>
+        <button type="submit" id="authSubmitBtn" class="primary-btn" style="width:100%;">Sign In</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="appRoot" class="app hidden">
+
+  <!-- ── SIDEBAR ─────────────────────────────── -->
+  <aside id="chatSidebar" class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <img id="brandLogo" src="logo-full-dark.svg" alt="AuditIQ" class="brand-logo-img"
+             onerror="this.style.display='none';document.getElementById('brandText').style.display='block'">
+        <span id="brandText" class="brand-text-fallback" style="display:none">AuditIQ</span>
+      </div>
+      <button id="newChatBtn" class="new-chat-btn" title="Start new chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Chat
+      </button>
     </div>
 
-    <!-- ===== MAIN APPLICATION ===== -->
-    <div id="appRoot" class="app hidden">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-top">
-                <div class="brand">
-                    <div class="brand-logo">A</div>
-                    <div class="brand-text">
-                        <span class="brand-name">AuditIQ</span>
-                        <span class="brand-sub">FINANCIAL INTELLIGENCE DESK</span>
-                    </div>
-                </div>
-                <button class="new-chat-btn" id="newChatBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New Chat
-                </button>
-            </div>
-            
-            <div class="sidebar-middle">
-                <div class="section-title">RECENT CHATS</div>
-                <div class="recents-list" id="recentsList">
-                    <div class="recent-item empty">No recent chats</div>
-                </div>
-            </div>
-
-            <div class="sidebar-bottom">
-                <button class="sidebar-action-btn" id="clearHistoryBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    Delete History
-                </button>
-                <div class="user-profile">
-                    <div class="user-avatar" id="userAvatarIcon">MZ</div>
-                    <div class="user-info">
-                        <span class="user-name" id="displayUsername">Mubashira Zainab</span>
-                        <span class="user-plan">Pro Auditor</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="top-header">
-                <div class="header-left">
-                    <div class="brand-logo sm">A</div>
-                    <span class="header-title">AuditIQ — Financial Intelligence Desk</span>
-                </div>
-                <div class="header-actions">
-                    <button class="icon-btn" id="logoutBtn" title="Logout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button>
-                    <button class="icon-btn" id="settingsBtn" title="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
-                    <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
-                    <button class="icon-btn mobile-menu-toggle" id="mobileMenuBtn" title="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
-                </div>
-            </header>
-
-            <div class="chat-viewport" id="chatViewport">
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-title">CUMULATIVE LEDGER VOLUME</span>
-                        <div class="metric-value" id="metricVolume">—</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-title">NEXT-PERIOD FORECAST</span>
-                        <div class="metric-value" id="metricForecast">—</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-title">MARKET SNAPSHOT</span>
-                        <div class="metric-value" id="metricMarket">—</div>
-                    </div>
-                </div>
-
-                <div class="chat-thread" id="chatThread">
-                    <div class="message assistant-msg">
-                        <div class="msg-avatar">AI</div>
-                        <div class="msg-body">
-                            <p>Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf / .png / .jpg / .jpeg) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
-                            <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Set your preferences in settings.</p>
-                        </div>
-                        <div class="msg-actions">
-                            <button class="action-ico-btn" title="Thumbs Up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button>
-                            <button class="action-ico-btn" title="Thumbs Down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg></button>
-                            <button class="action-ico-btn" title="Copy"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="chat-input-area">
-                <div class="input-box-wrapper">
-                    <button class="attach-btn" id="attachBtn" title="Upload Ledger/File">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    </button>
-                    <input type="file" id="fileInput" accept=".xlsx,.csv,.pdf,.png,.jpg,.jpeg" style="display: none;">
-                    <textarea id="chatInput" placeholder="Ask AuditIQ a question about your files..." rows="1"></textarea>
-                    <button class="mic-btn" id="micBtn" title="Voice Input"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></button>
-                    <button class="send-btn" id="sendBtn" title="Send Message">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                    </button>
-                </div>
-            </div>
-        </main>
+    <!-- Search -->
+    <div class="sidebar-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="historySearch" class="history-search-input" placeholder="Search conversations…" aria-label="Search chat history">
     </div>
 
-    <!-- Chart.js Library CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="app.js"></script>
+    <!-- Recent Chats -->
+    <div class="sidebar-middle">
+      <div id="recentsList" class="recents-list" role="list" aria-label="Chat history">
+        <div class="recent-item empty">No recent chats</div>
+      </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-bottom">
+      <button class="sidebar-action-btn danger" id="clearHistoryBtn" title="Delete all history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Clear All History
+      </button>
+      <button id="accountBtn" class="user-profile-btn" title="My profile" aria-haspopup="dialog">
+        <img id="userAvatarImg" src="user-icon.png" alt="User avatar" class="user-avatar-img" onerror="this.style.display='none'">
+        <div class="user-info">
+          <span class="user-name"  id="displayUsername">User</span>
+          <span class="user-email" id="displayEmail">—</span>
+        </div>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ───────────────────────── -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button id="sidebarToggleBtn" class="icon-btn mobile-menu-toggle" title="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="header-title">AuditIQ — Financial Intelligence Desk</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="icon-btn" id="settingsToggle" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="icon-btn" id="logoutBtn" title="Logout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-title">CUMULATIVE LEDGER VOLUME</span>
+        <div class="metric-value" id="kpiTotal">—</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-title">NEXT-PERIOD FORECAST</span>
+        <div class="metric-value" id="kpiForecast">—</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-title">MARKET SNAPSHOT</span>
+        <div class="metric-value" id="kpiMarket">—</div>
+      </div>
+    </div>
+
+    <!-- Chat Thread -->
+    <div class="chat-viewport" id="chatViewport">
+      <div class="chat-thread" id="thread">
+        <div class="msg assistant">
+          <div class="msg-avatar">AI</div>
+          <div class="msg-bubble animate-bubble" id="initialWelcomeText">
+            <p>Welcome to <strong>AuditIQ</strong>. Upload your financial ledger or image (.xlsx / .csv / .pdf / .png / .jpg) using the <strong>+</strong> button below, then click <strong>Run Analysis</strong>.</p>
+            <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Configure in ⚙️ Settings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-area">
+      <div class="input-box-wrapper">
+
+        <!-- Attach button + dropdown -->
+        <div class="attach-wrap">
+          <button class="attach-btn" id="attachBtn" title="Upload file" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="attach-menu" id="attachMenu" role="menu">
+            <button data-action="file"   role="menuitem">📄 Document (.csv, .xlsx, .pdf)</button>
+            <button data-action="photo"  role="menuitem">🖼️ Image (.png, .jpg)</button>
+            <button data-action="sample" role="menuitem">📥 Download Sample CSV</button>
+          </div>
+        </div>
+
+        <!-- Hidden file inputs -->
+        <input type="file" id="fileInputGeneral" accept=".csv,.xlsx,.pdf" hidden>
+        <input type="file" id="fileInputPhoto"   accept=".png,.jpg,.jpeg" hidden>
+
+        <!-- Message input -->
+        <textarea id="messageInput"
+                  class="chat-textarea"
+                  placeholder="Ask AuditIQ a question about your finances…"
+                  rows="1"
+                  aria-label="Type your message"></textarea>
+
+        <!-- Mic + Send -->
+        <button class="mic-btn"  id="micBtn"  title="Voice input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <button class="send-btn" id="sendBtn" title="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <p class="input-disclaimer">AuditIQ provides AI-generated analysis — not certified financial advice. Always consult a qualified advisor.</p>
+    </div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
