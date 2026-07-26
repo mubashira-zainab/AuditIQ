@@ -336,7 +336,14 @@ button { cursor: pointer; font-family: var(--font-body); }
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: margin-left 0.3s ease, transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* Slideable sidebar: works on all screen sizes via #sidebarToggleBtn */
+.sidebar.collapsed {
+  margin-left: -269px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Sidebar top: logo + new chat */
@@ -475,7 +482,11 @@ button { cursor: pointer; font-family: var(--font-body); }
 .header-left  { display: flex; align-items: center; gap: 10px; }
 .header-title { font-size: 14px; font-weight: 600; color: var(--text-hi); }
 .header-actions { display: flex; align-items: center; gap: 6px; }
-.mobile-menu-toggle { display: none; }
+.mobile-menu-toggle { display: flex; }
+
+/* Small inline icon used inside buttons/text (replaces emoji) */
+.inline-icon { width: 15px; height: 15px; flex-shrink: 0; vertical-align: -3px; }
+.modal-title { display: flex; align-items: center; gap: 8px; }
 
 /* ─── KPI Cards ───────────────────────────────────────────────── */
 .metrics-grid {
@@ -782,14 +793,12 @@ canvas.bubble-chart { margin-top: 14px; max-height: 200px; }
    RESPONSIVE
 ================================================================ */
 @media (max-width: 768px) {
-  .mobile-menu-toggle { display: flex !important; }
-
   .sidebar {
     position: fixed; top: 0; left: 0; bottom: 0;
-    z-index: 200; transform: translateX(-100%);
+    z-index: 200; margin-left: -269px;
     box-shadow: 4px 0 24px rgba(0,0,0,0.5);
   }
-  .sidebar.open { transform: translateX(0); }
+  .sidebar:not(.collapsed) { margin-left: 0; opacity: 1; pointer-events: auto; }
 
   .metrics-grid { grid-template-columns: 1fr; padding: 12px 12px 0; }
   .chat-thread  { padding: 14px 12px; }

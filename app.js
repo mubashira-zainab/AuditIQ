@@ -20,6 +20,20 @@ function escapeHtml(str) {
   return d.innerHTML;
 }
 
+// ─── ICONS (SVG, replaces emoji everywhere in the UI) ──────────────────────
+const ICON_DOC      = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+const ICON_IMAGE     = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+const ICON_DOWNLOAD  = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+const ICON_CHECK     = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
+const ICON_X         = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const ICON_PLAY      = `<svg class="inline-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+const ICON_GEAR      = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+const ICON_INFO      = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+const ICON_WARNING   = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+const ICON_SPEAKER   = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+const ICON_CLIPBOARD = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><rect x="6" y="4" width="12" height="18" rx="2"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg>`;
+const ICON_TRENDING  = `<svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
+
 // ─── TOAST SYSTEM ──────────────────────────────────────────────────────────
 
 /**
@@ -31,10 +45,10 @@ function showToast(message, type = 'info', duration = 3500) {
   if (!container) return;
 
   const icons = {
-    success: '✔',
-    error:   '✖',
-    info:    'ℹ',
-    warning: '⚠',
+    success: ICON_CHECK,
+    error:   ICON_X,
+    info:    ICON_INFO,
+    warning: ICON_WARNING,
   };
 
   const toast = document.createElement('div');
@@ -223,7 +237,7 @@ function applyUserUI(email) {
   const welcomeEl = el('initialWelcomeText');
   if (welcomeEl) {
     welcomeEl.innerHTML = `<p>Welcome <strong>${escapeHtml(name)}</strong>! Upload your financial ledger or ask a question to start a new analysis session.</p>
-    <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Configure in ⚙️ Settings.</p>`;
+    <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Configure in ${ICON_GEAR} Settings.</p>`;
   }
 
   // Avatar
@@ -354,7 +368,7 @@ el('refreshMetricsBtn')?.addEventListener('click', () => {
 // ─── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
 
 el('sidebarToggleBtn')?.addEventListener('click', () => {
-  el('chatSidebar')?.classList.toggle('open');
+  el('chatSidebar')?.classList.toggle('collapsed');
 });
 
 // ─── CHAT HISTORY ─────────────────────────────────────────────────────────
@@ -476,8 +490,8 @@ function loadRecentChats() {
 
       li.querySelector('.recent-title').addEventListener('click', () => {
         loadChatHistory(s.id, li);
-        // Close sidebar on mobile
-        el('chatSidebar')?.classList.remove('open');
+        // Close sidebar on mobile after picking a chat
+        if (window.innerWidth <= 768) el('chatSidebar')?.classList.add('collapsed');
       });
 
       li.querySelector('.recent-del-btn').addEventListener('click', async (e) => {
@@ -537,10 +551,10 @@ async function loadChatHistory(id, targetEl) {
 
     if (data.upload) {
       uploadData = data.upload;
-      addUserMessage(`<div class="file-chip">📄 <strong>${escapeHtml(uploadData.filename || 'Uploaded File')}</strong></div>`, false);
+      addUserMessage(`<div class="file-chip">${ICON_DOC} <strong>${escapeHtml(uploadData.filename || 'Uploaded File')}</strong></div>`, false);
       const uploadMsg = addAssistantMessage(
-        `<p>✓ File <strong>${escapeHtml(uploadData.filename || 'file')}</strong> — ${uploadData.row_count || 0} rows/elements found.</p>
-         <div class="bubble-actions"><button class="mini-btn" data-role="run-analysis">▶ Run Analysis & Generate Reports</button></div>`,
+        `<p>${ICON_CHECK} File <strong>${escapeHtml(uploadData.filename || 'file')}</strong> — ${uploadData.row_count || 0} rows/elements found.</p>
+         <div class="bubble-actions"><button class="mini-btn" data-role="run-analysis">${ICON_PLAY} Run Analysis & Generate Reports</button></div>`,
         false
       );
       uploadMsg.querySelector('[data-role="run-analysis"]')?.addEventListener('click', (e) => runAnalysis(e.target));
@@ -585,7 +599,7 @@ function startNewChat() {
         <div class="msg-avatar">AI</div>
         <div class="msg-bubble animate-bubble">
           <p>Welcome <strong>${escapeHtml(name)}</strong>! Upload your financial ledger or ask a question to start a new analysis.</p>
-          <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Configure in ⚙️ Settings.</p>
+          <p class="sub-text">Reports can be generated in English, Roman Urdu, or Urdu. Configure in ${ICON_GEAR} Settings.</p>
         </div>
       </div>`;
   }
@@ -662,7 +676,7 @@ el('attachMenu')?.addEventListener('click', (e) => {
 });
 
 async function uploadFile(file) {
-  addUserMessage(`<div class="file-chip">📄 <strong>${escapeHtml(file.name)}</strong></div>`);
+  addUserMessage(`<div class="file-chip">${ICON_DOC} <strong>${escapeHtml(file.name)}</strong></div>`);
   const thinking = addAssistantMessage(
     `<div class="skeleton-block skeleton-text" style="width:60%"></div>
      <div class="skeleton-block skeleton-text" style="width:80%"></div>`
@@ -696,11 +710,11 @@ async function uploadFile(file) {
     }
 
     thinking.querySelector('.msg-bubble').innerHTML =
-      `<p>✓ Parsed <strong>${escapeHtml(data.filename)}</strong> — ${data.row_count || 0} rows/elements found.</p>
-       <p>Adjust ticker and language in ⚙️ Settings if needed, then run the deep audit analysis.</p>
+      `<p>${ICON_CHECK} Parsed <strong>${escapeHtml(data.filename)}</strong> — ${data.row_count || 0} rows/elements found.</p>
+       <p>Adjust ticker and language in ${ICON_GEAR} Settings if needed, then run the deep audit analysis.</p>
        <div class="bubble-actions">
          <button class="mini-btn" data-role="run-analysis">
-           ▶ Run Analysis &amp; Generate Reports
+           ${ICON_PLAY} Run Analysis &amp; Generate Reports
          </button>
        </div>`;
 
@@ -711,7 +725,7 @@ async function uploadFile(file) {
 
   } catch (err) {
     thinking.querySelector('.msg-bubble').innerHTML =
-      `<p class="error-text">✖ Error: ${escapeHtml(err.message)}</p>`;
+      `<p class="error-text">${ICON_X} Error: ${escapeHtml(err.message)}</p>`;
     showToast('Upload failed: ' + err.message, 'error');
   }
 }
@@ -835,7 +849,7 @@ function formatChatReply(text) {
 
   // Markdown images
   text = text.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g, (_, alt, url) =>
-    addToken(`<div class="inline-img-wrap"><img src="${url}" alt="${escapeHtml(alt)}" class="inline-img"><a href="${url}" target="_blank" rel="noopener" class="img-dl-link">📥 Download</a></div>`)
+    addToken(`<div class="inline-img-wrap"><img src="${url}" alt="${escapeHtml(alt)}" class="inline-img"><a href="${url}" target="_blank" rel="noopener" class="img-dl-link">${ICON_DOWNLOAD} Download</a></div>`)
   );
 
   // Markdown links
@@ -912,7 +926,7 @@ async function sendChatMessage(text, isVoice = false) {
         <button class="action-btn copy-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
       </div>
       <div class="bubble-actions">
-        <button class="mini-btn" data-role="speak-reply">🔊 Speak Response</button>
+        <button class="mini-btn" data-role="speak-reply">${ICON_SPEAKER} Speak Response</button>
       </div>
       <audio class="bubble-audio" controls style="display:none;"></audio>
     `;
@@ -925,7 +939,7 @@ async function sendChatMessage(text, isVoice = false) {
 
   } catch (err) {
     thinking.querySelector('.msg-bubble').innerHTML =
-      `<p class="error-text">✖ Couldn't reach backend: ${escapeHtml(err.message)}</p>`;
+      `<p class="error-text">${ICON_X} Couldn't reach backend: ${escapeHtml(err.message)}</p>`;
     showToast('Message failed: ' + err.message, 'error');
   } finally {
     if (sendBtn) sendBtn.disabled = false;
@@ -1066,7 +1080,7 @@ async function runAnalysis(triggerBtn) {
     showToast('Analysis complete!', 'success');
   } catch (err) {
     thinking.querySelector('.msg-bubble').innerHTML =
-      `<p class="error-text">✖ ${escapeHtml(err.message)}</p>`;
+      `<p class="error-text">${ICON_X} ${escapeHtml(err.message)}</p>`;
     showToast('Analysis failed: ' + err.message, 'error');
   }
 }
@@ -1088,18 +1102,18 @@ function renderAnalysisBubble(msgEl, analysis) {
   const { report, forecast } = analysis;
 
   msgEl.querySelector('.msg-bubble').innerHTML = `
-    <p><strong>✅ Comprehensive Audit Report &amp; Forecast Ready.</strong></p>
+    <p><strong>${ICON_CHECK} Comprehensive Audit Report &amp; Forecast Ready.</strong></p>
     <canvas class="bubble-chart" id="${chartId}" height="140"></canvas>
     <div class="report-tabs">
-      <button class="report-tab active" data-tab="compliance-${chartCounter}">📋 Compliance Audit</button>
-      <button class="report-tab"        data-tab="forecast-${chartCounter}">📈 Forecast Narrative</button>
+      <button class="report-tab active" data-tab="compliance-${chartCounter}">${ICON_CLIPBOARD} Compliance Audit</button>
+      <button class="report-tab"        data-tab="forecast-${chartCounter}">${ICON_TRENDING} Forecast Narrative</button>
     </div>
     <div id="compliance-${chartCounter}" class="report-panel active"><pre>${escapeHtml(report.compliance_report)}</pre></div>
     <div id="forecast-${chartCounter}"   class="report-panel"><pre>${escapeHtml(report.narrative_report)}</pre></div>
     <div class="bubble-actions">
-      <button class="mini-btn" data-role="audio">🔊 Listen to Briefing</button>
-      <button class="mini-btn" data-role="download">⬇ Download PDF Report</button>
-      <button class="mini-btn" data-role="download-csv">⬇ Download CSV Data</button>
+      <button class="mini-btn" data-role="audio">${ICON_SPEAKER} Listen to Briefing</button>
+      <button class="mini-btn" data-role="download">${ICON_DOWNLOAD} Download PDF Report</button>
+      <button class="mini-btn" data-role="download-csv">${ICON_DOWNLOAD} Download CSV Data</button>
     </div>
     <audio class="bubble-audio" controls style="display:none;"></audio>
   `;

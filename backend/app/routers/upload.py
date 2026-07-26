@@ -18,7 +18,7 @@ router = APIRouter(tags=["upload"])
 @router.post("/api/upload", response_model=UploadResponse)
 async def upload_file(
     file:     UploadFile = File(...),
-    username: str        = Form(""),          # ← NEW: track who uploaded
+    username: str        = Form(""),          # ← track who uploaded
     settings: Settings   = Depends(get_settings),
     store:    SessionStore = Depends(get_session_store),
 ) -> UploadResponse:
@@ -66,8 +66,19 @@ async def upload_file(
 
         elif ext in (".png", ".jpg", ".jpeg", ".webp"):
             file_type = "image"
-            summary_data["preview_text"] = f"Image '{safe_name}' processed for AI reporting."
-            summary_data["full_text"]    = f"Image file: {safe_name}"
+            try:
+                import pytesseract
+                from PIL import Image
+                
+                img = Image.open(str(dest_path))
+                extracted_text = pytesseract.image_to_string(img)
+                
+                summary_data["preview_text"] = extracted_text[:2000] if extracted_text else f"Image '{safe_name}' processed via OCR (No text found)."
+                summary_data["full_text"]    = extracted_text if extracted_text else f"Image file: {safe_name}"
+            except Exception as img_err:
+                logger.warning("OCR warning for image %s: %s", safe_name, img_err)
+                summary_data["preview_text"] = f"Image '{safe_name}' uploaded (OCR failed/unavailable)."
+                summary_data["full_text"]    = f"Image file: {safe_name}"
 
         else:
             # Generic text/data fallback
