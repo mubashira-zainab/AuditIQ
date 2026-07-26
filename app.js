@@ -762,26 +762,27 @@ function downloadSampleCSV() {
 }
 
 // AuditIQ Compliance & Risk Breakdown Chart
-const ctx = document.getElementById('auditChart').getContext('2d');
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['SECP Filing', 'IFRS 16 Leases', 'Tax Compliance', 'Internal Controls'],
-        datasets: [{
-            label: 'Compliance Score (%)',
-            data: [85, 92, 78, 88],
-            backgroundColor: '#2DD4C6',
-            borderColor: '#3B9CD9',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: { beginAtZero: true, max: 100 }
+const chartElement = document.getElementById('auditChart');
+if (chartElement) {
+    const ctx = chartElement.getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['SECP Filing', 'IFRS 16 Leases', 'Tax Compliance', 'Internal Controls'],
+            datasets: [{
+                label: 'Compliance Score (%)',
+                data: [85, 92, 78, 88],
+                backgroundColor: '#2DD4C6',
+                borderColor: '#3B9CD9',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
         }
-    }
-});
+    });
+}
+
 // --- 1. Download Chart Image Function ---
 function downloadChartImage() {
     const canvas = document.getElementById('auditChart');
