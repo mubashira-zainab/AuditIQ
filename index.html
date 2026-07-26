@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -124,7 +124,7 @@
 
     <!-- ===== SIDEBAR / CHAT HISTORY DRAWER ===== -->
     <aside id="chatSidebar" class="sidebar" style="display: flex; flex-direction: column;">
-      <div style="flex: 1;">
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
         <button id="newChatBtn" class="new-chat-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -133,17 +133,25 @@
           <span>New Chat</span>
         </button>
         
-        <div class="recents-container" style="margin-top: 20px;">
-          <p class="recents-title" style="margin-bottom: 8px;">Recent Audits</p>
-          <ul id="recentsList" class="recents-list" style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="recents-container" style="margin-top: 20px; flex: 1; overflow-y: auto;">
+          <p class="recents-title" style="margin-bottom: 8px; font-weight: 600; font-size: 13px; color: var(--text-mid, #aaa);">Recent Chats</p>
+          <ul id="recentsList" class="recents-list" style="display: flex; flex-direction: column; gap: 8px; padding: 0; list-style: none;">
             <!-- Dynamically populated via app.js -->
           </ul>
         </div>
       </div>
 
-      <div style="padding-top: 10px; border-top: 1px solid var(--border-color, #333);">
+      <div style="padding-top: 10px; border-top: 1px solid var(--border-color, #333); display: flex; flex-direction: column; gap: 8px;">
+        <button id="clearHistoryBtn" class="new-chat-btn" style="display: flex; align-items: center; gap: 10px; width: 100%; background: transparent; border: 1px solid var(--border-color, #444); color: var(--text-color, #fff);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Delete History</span>
+        </button>
+
         <button id="accountBtn" class="new-chat-btn" style="display: flex; align-items: center; gap: 10px; width: 100%;">
-          <img src="/static/user-icon.png" alt="Account" style="width: 20px; height: 20px; border-radius: 50%;">
+          <img src="user-icon.png" alt="Account" style="width: 20px; height: 20px; border-radius: 50%;">
           <span>Account</span>
         </button>
       </div>
@@ -205,15 +213,15 @@
             <p>Welcome to AuditIQ. Upload your financial ledger or image file (.xlsx / .csv / .pdf / .png / .jpg / .jpeg) using the attachment icon below, then click <strong>Run Analysis</strong>.</p>
             <p style="color:var(--text-mid); font-size:12.5px;">Reports can be generated in English, Roman Urdu, or Urdu. Set your preferences in settings.</p>
           </div>
-          <!-- Gemini Style Action Buttons (Appears on Hover via CSS) -->
-          <div class="message-actions">
-            <button class="action-btn" title="Like" onclick="sendFeedback(this, 'like')">
+          <!-- Gemini Style White Action Buttons -->
+          <div class="message-actions" style="display: flex; gap: 6px; margin-top: 8px;">
+            <button class="action-btn" title="Like" onclick="sendFeedback(this, 'like')" style="color: #ffffff; background: rgba(255, 255, 255, 0.1); border: none; padding: 6px; border-radius: 4px; cursor: pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
             </button>
-            <button class="action-btn" title="Dislike" onclick="sendFeedback(this, 'dislike')">
+            <button class="action-btn" title="Dislike" onclick="sendFeedback(this, 'dislike')" style="color: #ffffff; background: rgba(255, 255, 255, 0.1); border: none; padding: 6px; border-radius: 4px; cursor: pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
             </button>
-            <button class="action-btn" title="Copy Text" onclick="copyMessage(this)">
+            <button class="action-btn" title="Copy Text" onclick="copyMessage(this)" style="color: #ffffff; background: rgba(255, 255, 255, 0.1); border: none; padding: 6px; border-radius: 4px; cursor: pointer;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
           </div>
@@ -253,6 +261,32 @@
                 <circle cx="12" cy="13" r="4"></circle>
               </svg>
               Take Photo
+            </button>
+            <button data-action="sample" onclick="downloadSampleCSV()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Sample CSV
+            </button>
+            <button data-action="download-chart" onclick="downloadChartImage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="17" x2="9" y2="10"></line>
+                <line x1="15" y1="17" x2="15" y2="14"></line>
+                <line x1="12" y1="17" x2="12" y2="7"></line>
+              </svg>
+              Download Chart
+            </button>
+            <button data-action="download-pdf" onclick="downloadAuditPDF()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              Download PDF Report
             </button>
           </div>
         </div>

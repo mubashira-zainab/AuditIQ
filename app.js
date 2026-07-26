@@ -741,6 +741,89 @@ function formatMoney(val) {
   return `₨ ${Number(val).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
 
+// --- Download Sample CSV Function ---
+function downloadSampleCSV() {
+    const csvData = [
+        ["Transaction ID", "Date", "Account Head", "Debit (PKR)", "Credit (PKR)", "Status"],
+        ["TRX-001", "2026-01-10", "Office Rent (IFRS 16)", "150000", "0", "Verified"],
+        ["TRX-002", "2026-01-15", "Accounts Receivable", "0", "350000", "Pending Review"],
+        ["TRX-003", "2026-01-20", "SECP Annual Filing Fee", "5000", "0", "Compliant"],
+        ["TRX-004", "2026-01-25", "Software Subscriptions", "45000", "0", "Verified"]
+    ];
+
+    let csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "AuditIQ_Financial_Sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// AuditIQ Compliance & Risk Breakdown Chart
+const ctx = document.getElementById('auditChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['SECP Filing', 'IFRS 16 Leases', 'Tax Compliance', 'Internal Controls'],
+        datasets: [{
+            label: 'Compliance Score (%)',
+            data: [85, 92, 78, 88],
+            backgroundColor: '#2DD4C6',
+            borderColor: '#3B9CD9',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true, max: 100 }
+        }
+    }
+});
+// --- 1. Download Chart Image Function ---
+function downloadChartImage() {
+    const canvas = document.getElementById('auditChart');
+    if (!canvas) {
+        alert("Audit chart not found!");
+        return;
+    }
+    const imageURL = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = imageURL;
+    link.download = "AuditIQ_Compliance_Chart.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- 2. Download PDF Report Function ---
+function downloadAuditPDF() {
+    // Basic text report generation or trigger print/pdf export
+    const reportContent = "AuditIQ Financial & Compliance Intelligence Report\nGenerated on: " + new Date().toLocaleDateString() + "\n\n(Detailed audit data attached from session records).";
+    const blob = new Blob([reportContent], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "AuditIQ_Report.txt"; // Can be integrated with jsPDF library if needed
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- 3. Clear / Delete History Function ---
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to delete all recent chat history?")) {
+            localStorage.removeItem('auditiq_sessions');
+            const recentsList = document.getElementById('recentsList');
+            if (recentsList) recentsList.innerHTML = '';
+            alert("Chat history cleared successfully.");
+        }
+    });
+}
+
 // ============ ANALYZE & CHAT ============
 async function runAnalysis(triggerBtn) {
   if (!sessionId) return;
@@ -1088,4 +1171,44 @@ function drawChart(canvasId, historical, forecastPoints) {
       },
     },
   });
+}
+// --- Download Chart Image Function ---
+function downloadChartImage() {
+    const canvas = document.getElementById('auditChart');
+    if (!canvas) {
+        alert("Audit chart not found!");
+        return;
+    }
+    const imageURL = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = imageURL;
+    link.download = "AuditIQ_Compliance_Chart.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- Download PDF Report Function ---
+function downloadAuditPDF() {
+    const reportContent = "AuditIQ Financial & Compliance Intelligence Report\nGenerated on: " + new Date().toLocaleDateString() + "\n\n(Detailed audit data attached from session records).";
+    const blob = new Blob([reportContent], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "AuditIQ_Report.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- Clear / Delete History Function ---
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to delete all recent chat history?")) {
+            localStorage.removeItem('auditiq_sessions');
+            const recentsList = document.getElementById('recentsList');
+            if (recentsList) recentsList.innerHTML = '';
+            alert("Chat history cleared successfully.");
+        }
+    });
 }
