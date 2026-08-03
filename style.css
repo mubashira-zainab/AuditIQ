@@ -813,3 +813,51 @@ canvas.bubble-chart { margin-top: 14px; max-height: 200px; }
   .header-title { display: none; }
   .metrics-grid { display: none; }
 }
+/* --- ADDED FOR RENAME/PIN --- */
+.rename-input {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px;
+  width: 130px;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.rename-input.hidden {
+  display: none;
+}
+
+.recent-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.recent-item:hover .recent-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+
+.pinned-badge {
+  color: var(--primary-color);
+}

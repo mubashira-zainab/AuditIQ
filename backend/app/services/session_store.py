@@ -129,6 +129,22 @@ class SessionStore:
         finally:
             db.close()
 
+    # ─── UPDATE PIN ───────────────────────────────────────────────────────────
+
+    def update_pin(self, session_id: str, is_pinned: bool) -> bool:
+        db = SessionLocal()
+        try:
+            db_sess = db.query(DBSession).filter(
+                DBSession.session_id == session_id
+            ).first()
+            if not db_sess:
+                return False
+            db_sess.is_pinned = is_pinned
+            db.commit()
+            return True
+        finally:
+            db.close()
+
     # ─── DELETE ONE ───────────────────────────────────────────────────────────
 
     def delete(self, session_id: str) -> bool:
@@ -184,6 +200,7 @@ class SessionStore:
                     "title":         s.title or s.upload_data.get("filename", "Chat") if s.upload_data else "Chat",
                     "created_at":    s.created_at.isoformat() if s.created_at else "",
                     "message_count": msg_count,
+                    "is_pinned":     s.is_pinned,
                 })
             return result
         finally:

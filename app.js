@@ -136,20 +136,19 @@ el('themeToggle')?.addEventListener('click', () => {
 
 // ─── AUTH HELPERS ────────────────────────────────────────────────────────
 
+function getAuthToken()     { return localStorage.getItem('auditiq-token') || ''; }
 function getLoggedInUser()  { return localStorage.getItem('auditiq-logged-in') || ''; }
-function getUsers()         { return JSON.parse(localStorage.getItem('auditiq-users') || '{}'); }
-function saveUsers(u)       { localStorage.setItem('auditiq-users', JSON.stringify(u)); }
+function getUsername()      { return localStorage.getItem('auditiq-username') || ''; }
+function getAvatar()        { return localStorage.getItem('auditiq-avatar') || ''; }
 
-function getUserObj(email) {
-  const u = getUsers()[email];
-  if (!u) return null;
-  if (typeof u === 'string') return { password: u, username: '', avatar: '' };
-  return u;
+function authHeader() {
+  const token = getAuthToken();
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 
 function getUserDisplayName(email) {
-  const obj = getUserObj(email);
-  if (obj?.username) return obj.username.charAt(0).toUpperCase() + obj.username.slice(1);
+  const uname = getUsername();
+  if (uname) return uname.charAt(0).toUpperCase() + uname.slice(1);
   if (email.includes('@')) return email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
   return email;
 }
@@ -193,7 +192,7 @@ el('togglePasswordBtn')?.addEventListener('click', () => {
     : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
 });
 
-el('authForm')?.addEventListener('submit', (e) => {
+el('authForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email    = el('authEmail')?.value.trim().toLowerCase();
   const password = el('authPassword')?.value;
@@ -202,37 +201,52 @@ el('authForm')?.addEventListener('submit', (e) => {
 
   if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
 
-  const users = getUsers();
+  const btn = el('authSubmitBtn');
+  const originalText = btn.textContent;
+  btn.textContent = 'Please wait...';
+  btn.disabled = true;
 
-  if (authMode === 'login') {
-    const obj = getUserObj(email);
-    if (!obj || obj.password !== password) {
-      errEl.textContent = 'Invalid email or password.';
-      return;
-    }
-    loginUser(email);
-  } else {
-    if (users[email]) { errEl.textContent = 'An account with this email already exists.'; return; }
-    users[email] = { password, username, avatar: '' };
-    saveUsers(users);
-    loginUser(email);
+  try {
+    const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const body = authMode === 'login' ? { email, password } : { email, password, username };
+    
+    const res = await fetch(`${apiBase()}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Authentication failed');
+    
+    loginUser(data.token, data.user);
+  } catch (err) {
+    errEl.textContent = err.message;
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
   }
 });
 
-function loginUser(email) {
-  localStorage.setItem('auditiq-logged-in', email);
+function loginUser(token, user) {
+  localStorage.setItem('auditiq-token', token);
+  localStorage.setItem('auditiq-logged-in', user.email);
+  localStorage.setItem('auditiq-username', user.username || '');
+  localStorage.setItem('auditiq-avatar', user.avatar || '');
+  
   el('loginScreen').classList.add('hidden');
   el('appRoot').classList.remove('hidden');
   el('authErrorMsg').textContent = '';
-  applyUserUI(email);
-  loadRecentChats();
+  
+  applyUserUI(user.email);
+  syncSessionsFromAPI();
   showToast('Welcome back!', 'success');
 }
 
 function applyUserUI(email) {
   const name = getUserDisplayName(email);
-  el('displayUsername').textContent = name;
-  el('displayEmail').textContent    = email;
+  if (el('displayUsername')) el('displayUsername').textContent = name;
+  if (el('displayEmail'))    el('displayEmail').textContent    = email;
 
   const welcomeEl = el('initialWelcomeText');
   if (welcomeEl) {
@@ -241,17 +255,21 @@ function applyUserUI(email) {
   }
 
   // Avatar
-  const obj = getUserObj(email);
-  if (obj?.avatar) el('userAvatarImg').src = obj.avatar;
+  const avatar = getAvatar();
+  if (avatar && el('userAvatarImg')) el('userAvatarImg').src = avatar;
 }
 
 // Logout
 el('logoutBtn')?.addEventListener('click', () => {
+  localStorage.removeItem('auditiq-token');
   localStorage.removeItem('auditiq-logged-in');
+  localStorage.removeItem('auditiq-username');
+  localStorage.removeItem('auditiq-avatar');
+  
   el('appRoot').classList.add('hidden');
   el('loginScreen').classList.remove('hidden');
-  el('authEmail').value    = '';
-  el('authPassword').value = '';
+  if(el('authEmail')) el('authEmail').value = '';
+  if(el('authPassword')) el('authPassword').value = '';
   sessionId  = null;
   uploadData = null;
   showToast('Logged out successfully.', 'info');
@@ -261,10 +279,9 @@ el('logoutBtn')?.addEventListener('click', () => {
 
 el('accountBtn')?.addEventListener('click', () => {
   const email = getLoggedInUser();
-  const obj   = getUserObj(email) || {};
   el('profileEmail').textContent  = email;
-  el('profileUsername').value     = obj.username || '';
-  el('profileAvatarPreview').src  = obj.avatar || 'user-icon.png';
+  el('profileUsername').value     = getUsername();
+  el('profileAvatarPreview').src  = getAvatar() || 'user-icon.png';
   el('accountModal').classList.remove('hidden');
 });
 
@@ -276,32 +293,57 @@ el('avatarUpload')?.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (ev) => {
+  reader.onload = async (ev) => {
     const b64 = ev.target.result;
-    el('profileAvatarPreview').src = b64;
-    el('userAvatarImg').src = b64;
-    const email = getLoggedInUser();
-    const users = getUsers();
-    if (users[email]) {
-      if (typeof users[email] === 'string') users[email] = { password: users[email], username: '', avatar: '' };
-      users[email].avatar = b64;
-      saveUsers(users);
+    try {
+      const res = await fetch(${apiBase()}/api/auth/profile, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ avatar: b64 })
+      });
+      if (res.ok) {
+        localStorage.setItem('auditiq-avatar', b64);
+        el('profileAvatarPreview').src = b64;
+        applyUserUI(getLoggedInUser());
+        showToast('Avatar updated!', 'success');
+      } else {
+        showToast('Failed to update avatar.', 'error');
+      }
+    } catch {
+      showToast('Failed to connect to server.', 'error');
     }
   };
   reader.readAsDataURL(file);
 });
 
-el('saveProfileBtn')?.addEventListener('click', () => {
-  const email    = getLoggedInUser();
-  const newName  = el('profileUsername').value.trim();
-  if (!newName) { showToast('Username cannot be empty.', 'warning'); return; }
-  const users = getUsers();
-  if (typeof users[email] === 'string') users[email] = { password: users[email], username: newName, avatar: '' };
-  else users[email].username = newName;
-  saveUsers(users);
-  applyUserUI(email);
-  el('accountModal').classList.add('hidden');
-  showToast('Profile saved!', 'success');
+el('saveProfileBtn')?.addEventListener('click', async () => {
+  const newName = el('profileUsername').value.trim();
+  const btn = el('saveProfileBtn');
+  const originalText = btn.textContent;
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(${apiBase()}/api/auth/profile, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ username: newName })
+    });
+    
+    if (res.ok) {
+      localStorage.setItem('auditiq-username', newName);
+      applyUserUI(getLoggedInUser());
+      el('accountModal').classList.add('hidden');
+      showToast('Profile saved!', 'success');
+    } else {
+      showToast('Failed to save profile.', 'error');
+    }
+  } catch (err) {
+    showToast('Failed to connect to server.', 'error');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
 });
 
 // Close modals on overlay click
@@ -373,56 +415,53 @@ el('sidebarToggleBtn')?.addEventListener('click', () => {
 
 // ─── CHAT HISTORY ─────────────────────────────────────────────────────────
 
-/** Save a new session entry to localStorage */
-function saveSessionLocally(id, title) {
-  const key   = getUserSessionKey();
-  let sessions = JSON.parse(localStorage.getItem(key) || '[]');
-  // Update or prepend
-  const idx = sessions.findIndex(s => s.id === id);
-  const entry = {
-    id,
-    title: (title || 'New Chat').slice(0, 80),
-    date:  new Date().toISOString(),
-  };
-  if (idx >= 0) sessions[idx] = entry;
-  else sessions.unshift(entry);
-  localStorage.setItem(key, JSON.stringify(sessions));
-  loadRecentChats();
-}
+let sessionCache = [];
 
-/** Update the title of an existing local session */
-function updateLocalSessionTitle(id, title) {
-  const key = getUserSessionKey();
-  const sessions = JSON.parse(localStorage.getItem(key) || '[]');
-  const s = sessions.find(s => s.id === id);
-  if (s) {
-    s.title = title.slice(0, 80);
-    localStorage.setItem(key, JSON.stringify(sessions));
-  }
-}
-
-/** Delete a single session locally and optionally from backend */
-async function deleteSessionLocally(id) {
-  const key = getUserSessionKey();
-  let sessions = JSON.parse(localStorage.getItem(key) || '[]');
-  sessions = sessions.filter(s => s.id !== id);
-  localStorage.setItem(key, JSON.stringify(sessions));
-
-  // Also delete from backend
+async function syncSessionsFromAPI() {
+  const email = getLoggedInUser();
+  if (!email) return;
   try {
-    await fetch(`${apiBase()}/api/chat/session/${id}`, { method: 'DELETE' });
-  } catch { /* ignore */ }
-
-  if (sessionId === id) {
-    sessionId  = null;
-    uploadData = null;
-    startNewChat();
-  } else {
-    loadRecentChats();
-  }
+    const res = await fetch(`${apiBase()}/api/chat/sessions/${encodeURIComponent(email)}`, { headers: authHeader() });
+    if (res.ok) {
+      sessionCache = await res.json();
+      renderRecentChats();
+    }
+  } catch (err) { console.error(err); }
 }
 
-/** Returns a label string for a date: 'Today', 'Yesterday', 'Last 7 Days', or month string */
+async function updateLocalSessionTitle(id, newTitle) {
+  const s = sessionCache.find(s => s.session_id === id);
+  if (s) { s.title = newTitle.slice(0, 80); renderRecentChats(); }
+  try {
+    await fetch(`${apiBase()}/api/chat/session/${id}/title`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ title: newTitle })
+    });
+  } catch (err) { console.error(err); }
+}
+
+async function togglePinSession(id) {
+  const s = sessionCache.find(s => s.session_id === id);
+  if (!s) return;
+  s.is_pinned = !s.is_pinned;
+  renderRecentChats();
+  try {
+    await fetch(`${apiBase()}/api/chat/session/${id}/pin`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ is_pinned: s.is_pinned })
+    });
+  } catch (err) { console.error(err); }
+}
+
+async function deleteSessionLocally(id) {
+  sessionCache = sessionCache.filter(s => s.session_id !== id);
+  try { await fetch(`${apiBase()}/api/chat/session/${id}`, { method: 'DELETE', headers: authHeader() }); } catch {}
+  if (sessionId === id) { sessionId = null; uploadData = null; startNewChat(); }
+  renderRecentChats();
+}
+
 function dateLabel(iso) {
   const now   = new Date();
   const d     = new Date(iso);
@@ -435,89 +474,130 @@ function dateLabel(iso) {
   return d.toLocaleString('default', { month: 'long', year: 'numeric' });
 }
 
-/** Load and render the recent chats sidebar list */
-function loadRecentChats() {
+function renderRecentChats() {
   const listEl = el('recentsList');
   if (!listEl) return;
-
-  const query    = el('historySearch')?.value.trim().toLowerCase() || '';
-  let sessions   = JSON.parse(localStorage.getItem(getUserSessionKey()) || '[]');
-
-  // Filter by search
-  if (query) sessions = sessions.filter(s => s.title.toLowerCase().includes(query));
-
+  const query = el('historySearch')?.value.trim().toLowerCase() || '';
+  let displaySessions = sessionCache;
+  if (query) displaySessions = displaySessions.filter(s => s.title.toLowerCase().includes(query));
   listEl.innerHTML = '';
-
-  if (!sessions.length) {
+  if (!displaySessions.length) {
     listEl.innerHTML = `<div class="recent-item empty" role="listitem">${query ? 'No results found' : 'No recent chats'}</div>`;
     return;
   }
+  const pinned = displaySessions.filter(s => s.is_pinned);
+  const unpinned = displaySessions.filter(s => !s.is_pinned);
 
-  // Group by date label
+  if (pinned.length > 0 && !query) {
+    const header = document.createElement('div');
+    header.className = 'history-group-header';
+    header.textContent = 'Pinned';
+    listEl.appendChild(header);
+    pinned.forEach(s => listEl.appendChild(createSessionElement(s)));
+  }
+
   const groups = {};
-  sessions.forEach(s => {
-    const lbl = dateLabel(s.date || new Date().toISOString());
+  unpinned.forEach(s => {
+    const lbl = dateLabel(s.created_at || new Date().toISOString());
     if (!groups[lbl]) groups[lbl] = [];
     groups[lbl].push(s);
   });
-
   Object.entries(groups).forEach(([label, items]) => {
-    // Date group header
     const header = document.createElement('div');
     header.className = 'history-group-header';
     header.textContent = label;
     listEl.appendChild(header);
-
-    items.forEach(s => {
-      const li = document.createElement('div');
-      li.className = 'recent-item';
-      li.setAttribute('role', 'listitem');
-      if (s.id === sessionId) li.classList.add('active');
-      li.dataset.sessionId = s.id;
-
-      li.innerHTML = `
-        <svg class="recent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span class="recent-title">${escapeHtml(s.title)}</span>
-        <button class="recent-del-btn" title="Delete this chat" aria-label="Delete ${escapeHtml(s.title)}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          </svg>
-        </button>
-      `;
-
-      li.querySelector('.recent-title').addEventListener('click', () => {
-        loadChatHistory(s.id, li);
-        // Close sidebar on mobile after picking a chat
-        if (window.innerWidth <= 768) el('chatSidebar')?.classList.add('collapsed');
-      });
-
-      li.querySelector('.recent-del-btn').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const ok = await showConfirm(`Delete "${s.title}"?`, 'Delete Chat');
-        if (!ok) return;
-
-        // Animate out
-        li.style.transition = 'all 0.25s ease';
-        li.style.opacity    = '0';
-        li.style.transform  = 'translateX(-12px)';
-        li.style.maxHeight  = li.scrollHeight + 'px';
-        setTimeout(() => {
-          li.style.maxHeight = '0';
-          li.style.padding   = '0';
-          li.style.margin    = '0';
-        }, 200);
-        setTimeout(() => {
-          deleteSessionLocally(s.id);
-          showToast('Chat deleted', 'success', 2000);
-        }, 400);
-      });
-
-      listEl.appendChild(li);
-    });
+    items.forEach(s => listEl.appendChild(createSessionElement(s)));
   });
+}
+
+function createSessionElement(s) {
+  const li = document.createElement('div');
+  li.className = 'recent-item';
+  li.setAttribute('role', 'listitem');
+  if (s.session_id === sessionId) li.classList.add('active');
+  li.dataset.sessionId = s.session_id;
+
+  const pinIcon = s.is_pinned 
+    ? `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="pinned-badge"><path d="M16 4h-8l-2 10-4 4v2h9v4h2v-4h9v-2l-4-4l-2-10z"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h-8l-2 10-4 4v2h9v4h2v-4h9v-2l-4-4l-2-10z"/></svg>`;
+
+  li.innerHTML = `
+    <svg class="recent-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span class="recent-title" title="${escapeHtml(s.title)}">${escapeHtml(s.title)}</span>
+    <input type="text" class="rename-input hidden" value="${escapeHtml(s.title)}" />
+    <div class="recent-actions" style="display:flex; gap:4px; margin-left:auto;">
+      <button class="action-btn pin-btn" title="${s.is_pinned ? 'Unpin' : 'Pin'}">${pinIcon}</button>
+      <button class="action-btn edit-title-btn" title="Rename">✏️</button>
+      <button class="recent-del-btn" title="Delete this chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+      </button>
+    </div>
+  `;
+
+  const titleSpan = li.querySelector('.recent-title');
+  const inputEl = li.querySelector('.rename-input');
+
+  titleSpan.addEventListener('click', () => {
+    loadChatHistory(s.session_id, li);
+    if (window.innerWidth <= 768) el('chatSidebar')?.classList.add('collapsed');
+  });
+
+  titleSpan.addEventListener('dblclick', () => startRename(titleSpan, inputEl, s));
+  li.querySelector('.edit-title-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    startRename(titleSpan, inputEl, s);
+  });
+
+  inputEl.addEventListener('blur', () => finishRename(titleSpan, inputEl, s));
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') finishRename(titleSpan, inputEl, s);
+    if (e.key === 'Escape') {
+      inputEl.value = s.title;
+      finishRename(titleSpan, inputEl, s);
+    }
+  });
+
+  li.querySelector('.pin-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePinSession(s.session_id);
+  });
+
+  li.querySelector('.recent-del-btn').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const ok = await showConfirm(`Delete "${s.title}"?`, 'Delete Chat');
+    if (!ok) return;
+    li.style.transition = 'all 0.25s ease';
+    li.style.opacity = '0';
+    li.style.maxHeight = '0';
+    li.style.padding = '0';
+    setTimeout(() => {
+      deleteSessionLocally(s.session_id);
+      showToast('Chat deleted', 'success', 2000);
+    }, 250);
+  });
+
+  return li;
+}
+
+function startRename(span, input, s) {
+  span.classList.add('hidden');
+  input.classList.remove('hidden');
+  input.focus();
+  input.select();
+}
+
+function finishRename(span, input, s) {
+  const newTitle = input.value.trim();
+  if (newTitle && newTitle !== s.title) {
+    updateLocalSessionTitle(s.session_id, newTitle);
+  }
+  span.classList.remove('hidden');
+  input.classList.add('hidden');
 }
 
 /** Load full conversation from backend */
@@ -538,7 +618,7 @@ async function loadChatHistory(id, targetEl) {
   );
 
   try {
-    const res  = await fetch(`${apiBase()}/api/chat/history/${id}`);
+    const res  = await fetch(`${apiBase()}/api/chat/history/${id}`, { headers: authHeader() });
     const data = await res.json();
 
     skeletonMsg.remove();
@@ -626,12 +706,12 @@ el('clearHistoryBtn')?.addEventListener('click', async () => {
   }
 
   startNewChat();
-  loadRecentChats();
+  syncSessionsFromAPI();
   showToast('All chat history deleted.', 'success');
 });
 
 // Search filter
-el('historySearch')?.addEventListener('input', loadRecentChats);
+el('historySearch')?.addEventListener('input', renderRecentChats);
 
 // ─── SESSION CHECK ON LOAD ─────────────────────────────────────────────────
 
@@ -641,7 +721,7 @@ window.addEventListener('DOMContentLoaded', () => {
     el('loginScreen').classList.add('hidden');
     el('appRoot').classList.remove('hidden');
     applyUserUI(user);
-    loadRecentChats();
+    syncSessionsFromAPI();
   }
 });
 
@@ -687,7 +767,7 @@ async function uploadFile(file) {
   formData.append('username', getLoggedInUser());   // link session to user
 
   try {
-    const res  = await fetch(`${apiBase()}/api/upload`, { method: 'POST', body: formData });
+    const res  = await fetch(`${apiBase()}/api/upload`, { method: 'POST', body: formData, headers: authHeader() });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Upload failed');
 
@@ -695,7 +775,7 @@ async function uploadFile(file) {
     sessionId  = data.session_id;
 
     // Save with filename as initial title
-    saveSessionLocally(sessionId, file.name);
+    syncSessionsFromAPI();
 
     // Also save username to backend session
     const email = getLoggedInUser();

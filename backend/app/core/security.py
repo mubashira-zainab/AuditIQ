@@ -7,7 +7,7 @@ from pathlib import Path
 
 from app.core.exceptions import FileTooLargeError, UnsupportedFileTypeError
 
-ALLOWED_EXTENSIONS = {".xlsx", ".csv", ".pdf", ".txt", ".png", ".jpg", ".jpeg"}
+ALLOWED_EXTENSIONS = {".xlsx", ".xls", ".csv", ".pdf", ".txt", ".png", ".jpg", ".jpeg", ".webp", ".docx", ".json"}
 _SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
