@@ -12,7 +12,7 @@ const qs  = (sel)  => document.querySelector(sel);
 const qsa = (sel)  => document.querySelectorAll(sel);
 
 const apiBase = () =>
-  (el('apiBase')?.value.trim().replace(/\/$/, '')) || 'https://auditiq-f8t8.onrender.com';
+  (el('apiBase')?.value.trim().replace(/\/$/, '')) || 'http://127.0.0.1:8000';
 
 function escapeHtml(str) {
   const d = document.createElement('div');
@@ -296,7 +296,7 @@ el('avatarUpload')?.addEventListener('change', (e) => {
   reader.onload = async (ev) => {
     const b64 = ev.target.result;
     try {
-      const res = await fetch(${apiBase()}/api/auth/profile, {
+      const res = await fetch(`${apiBase()}/api/auth/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({ avatar: b64 })
@@ -324,7 +324,7 @@ el('saveProfileBtn')?.addEventListener('click', async () => {
   btn.disabled = true;
 
   try {
-    const res = await fetch(${apiBase()}/api/auth/profile, {
+    const res = await fetch(`${apiBase()}/api/auth/profile`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ username: newName })
